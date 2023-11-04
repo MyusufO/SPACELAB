@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "153812391898",
+    "project_id": "todolist-5b1dc",
+    "storage_bucket": "todolist-5b1dc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153812391898:android:5a82e61eaff74fdc7b52e3",
+        "android_client_info": {
+          "package_name": "com.example.spacelab"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_N9YHCcci6obiVsYl-gBffEDqKmbB1N4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
