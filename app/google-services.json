@@ -12,7 +12,20 @@
           "package_name": "com.example.spacelab"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "153812391898-0p2p88b4g77jo4gjethudolt5kk3gpia.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.spacelab",
+            "certificate_hash": "085f4d12b7652d5216ad7fc29c69cc74da8ceb0e"
+          }
+        },
+        {
+          "client_id": "153812391898-vpfvoqo864voebv6a69otajqmckg5h5i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyC_N9YHCcci6obiVsYl-gBffEDqKmbB1N4"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "153812391898-vpfvoqo864voebv6a69otajqmckg5h5i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

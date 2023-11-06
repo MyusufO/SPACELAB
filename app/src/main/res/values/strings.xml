@@ -3,4 +3,6 @@
     <string name="example_mail_com">Example@mail.com</string>
     <string name="password">Password</string>
     <string name="button">Button</string>
+    <string name="button1">Button</string>
+    <string name="default_web_client_id">153812391898-vpfvoqo864voebv6a69otajqmckg5h5i.apps.googleusercontent.com</string>
 </resources>
