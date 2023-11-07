@@ -23,22 +23,8 @@ class Signup : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
+
         mAuth = FirebaseAuth.getInstance()
-
-        // Configure Google Sign-In
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-
-        val googleSignInClient = GoogleSignIn.getClient(this, gso)
-
-        val googleSignInButton = findViewById<Button>(R.id.Signupconfirm)
-        googleSignInButton.setOnClickListener {
-            val signInIntent = googleSignInClient.signInIntent
-            startActivityForResult(signInIntent, RC_SIGN_IN)
-        }
-
         val emailEditText = findViewById<EditText>(R.id.SignupLogin)
         val passwordEditText = findViewById<EditText>(R.id.SignupPassword)
         val emailPasswordSignupButton = findViewById<Button>(R.id.SignupConfirm)
@@ -57,10 +43,14 @@ class Signup : AppCompatActivity() {
                             // For example, you can add the user's information to the database.
                             val user = mAuth.currentUser
                             if (user != null) {
-                                val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-                                val reference: DatabaseReference = db.getReference("Users")
-                                val newUser = reference.push()
-                                newUser.setValue(user.email)
+                                val email = user.email
+                                if (email != null) {
+                                    val db: FirebaseDatabase = FirebaseDatabase.getInstance()
+                                    val reference: DatabaseReference = db.getReference("Users")
+                                    val newUser = reference.push()
+                                    newUser.setValue(email)
+                                }
+
                             }
                         } else {
                             // Handle signup failure here (e.g., display an error message).
@@ -71,6 +61,20 @@ class Signup : AppCompatActivity() {
                 // Handle empty email or password fields here (e.g., display an error message).
                 Toast.makeText(this, "Email and password are required.", Toast.LENGTH_SHORT).show()
             }
+        }
+        // Configure Google Sign-In
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+
+        val googleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        val googleSignInButton = findViewById<Button>(R.id.Signupconfirm)
+        googleSignInButton.setOnClickListener {
+            val signInIntent = googleSignInClient.signInIntent
+            startActivityForResult(signInIntent, RC_SIGN_IN)
+
         }
     }
 

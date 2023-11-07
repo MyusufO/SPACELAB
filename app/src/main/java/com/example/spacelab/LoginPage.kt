@@ -51,16 +51,7 @@ class LoginPage : AppCompatActivity() {
                 mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
-                            val user = mAuth.currentUser
-                            if (user != null) {
-                                val email = user.email
-                                if (email != null) {
-                                    val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-                                    val reference: DatabaseReference = db.getReference("Users")
-                                    val newUser = reference.push()
-                                    newUser.setValue(email)
-                                }
-                            }
+
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
                             finish() // Optional, to close the login activity if you don't want the user to go back to it
