@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -37,7 +38,42 @@ class Signup : AppCompatActivity() {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
+
+        val emailEditText = findViewById<EditText>(R.id.SignupLogin)
+        val passwordEditText = findViewById<EditText>(R.id.SignupPassword)
+        val emailPasswordSignupButton = findViewById<Button>(R.id.SignupConfirm)
+
+        emailPasswordSignupButton.setOnClickListener {
+            val email = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
+
+            // Check if email and password are not empty
+            if (email.isNotEmpty() && password.isNotEmpty()) {
+                mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            // Email/password signup was successful.
+                            // You can handle successful signup here.
+                            // For example, you can add the user's information to the database.
+                            val user = mAuth.currentUser
+                            if (user != null) {
+                                val db: FirebaseDatabase = FirebaseDatabase.getInstance()
+                                val reference: DatabaseReference = db.getReference("Users")
+                                val newUser = reference.push()
+                                newUser.setValue(user.email)
+                            }
+                        } else {
+                            // Handle signup failure here (e.g., display an error message).
+                            Toast.makeText(this, "Email/password signup failed.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            } else {
+                // Handle empty email or password fields here (e.g., display an error message).
+                Toast.makeText(this, "Email and password are required.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -59,15 +95,14 @@ class Signup : AppCompatActivity() {
         mAuth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    val user=mAuth.currentUser
-                    if(user!=null){
-                        val email=user.email
-                        if(email!=null){
-                            val db:FirebaseDatabase=FirebaseDatabase.getInstance()
-                            val reference:DatabaseReference=db.getReference("Users")
+                    val user = mAuth.currentUser
+                    if (user != null) {
+                        val email = user.email
+                        if (email != null) {
+                            val db: FirebaseDatabase = FirebaseDatabase.getInstance()
+                            val reference: DatabaseReference = db.getReference("Users")
                             val newUser = reference.push()
                             newUser.setValue(email)
-
                         }
                     }
                     // Sign in with Google successful, you can redirect to the main activity

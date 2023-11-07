@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -11,6 +12,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class LoginPage : AppCompatActivity() {
     private lateinit var mAuth: FirebaseAuth
@@ -29,10 +32,51 @@ class LoginPage : AppCompatActivity() {
 
         val googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        val googleSignInButton = findViewById<Button>(R.id.Loginconfirm) // Use the same button ID from your layout XML
+        val googleSignInButton = findViewById<Button>(R.id.Loginconfirm)
         googleSignInButton.setOnClickListener {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
+        }
+
+        val emailEditText = findViewById<EditText>(R.id.LoginEmail)
+        val passwordEditText = findViewById<EditText>(R.id.LoginPassword)
+        val emailPasswordLoginButton = findViewById<Button>(R.id.LoginConfirm)
+
+        emailPasswordLoginButton.setOnClickListener {
+            val email = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
+
+            // Check if email and password are not empty
+            if (email.isNotEmpty() && password.isNotEmpty()) {
+                mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            val user = mAuth.currentUser
+                            if (user != null) {
+                                val email = user.email
+                                if (email != null) {
+                                    val db: FirebaseDatabase = FirebaseDatabase.getInstance()
+                                    val reference: DatabaseReference = db.getReference("Users")
+                                    val newUser = reference.push()
+                                    newUser.setValue(email)
+                                }
+                            }
+                            val intent = Intent(this, MainActivity::class.java)
+                            startActivity(intent)
+                            finish() // Optional, to close the login activity if you don't want the user to go back to it
+
+                            // You can also save user data to Firebase Realtime Database or Firestore
+                        } else {
+                            // Handle login failure here
+                            Log.e(TAG, "Email/password login failed", task.exception)
+                            // Display an error message or handle the failure in some way
+                            Toast.makeText(this, "Email/Password login failed", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            } else {
+                // Handle empty email or password fields here (e.g., display an error message).
+                Toast.makeText(this, "Email and password are required.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -71,7 +115,6 @@ class LoginPage : AppCompatActivity() {
                 }
             }
     }
-
 
     companion object {
         private const val RC_SIGN_IN = 9001
