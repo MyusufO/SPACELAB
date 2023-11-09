@@ -11,9 +11,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+
 
 class LoginPage : AppCompatActivity() {
     private lateinit var mAuth: FirebaseAuth
@@ -23,6 +24,18 @@ class LoginPage : AppCompatActivity() {
         setContentView(R.layout.activity_login_page)
 
         mAuth = FirebaseAuth.getInstance()
+
+        // Check if the user is already logged in
+        val currentUser = mAuth.currentUser
+        if (currentUser != null) {
+            // A user is already logged in.
+            // You can take appropriate action here.
+            // For example, you can directly navigate to the main activity.
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
 
         // Configure Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -36,8 +49,6 @@ class LoginPage : AppCompatActivity() {
         googleSignInButton.setOnClickListener {
             val intent = Intent(this, Signup::class.java)
             startActivity(intent)
-           // val signInIntent = googleSignInClient.signInIntent
-            //startActivityForResult(signInIntent, RC_SIGN_IN)
         }
 
         val emailEditText = findViewById<EditText>(R.id.LoginEmail)
@@ -53,22 +64,22 @@ class LoginPage : AppCompatActivity() {
                 mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
-
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
-                            finish() // Optional, to close the login activity if you don't want the user to go back to it
-
-                            // You can also save user data to Firebase Realtime Database or Firestore
+                            finish()
                         } else {
-                            // Handle login failure here
                             Log.e(TAG, "Email/password login failed", task.exception)
-                            // Display an error message or handle the failure in some way
                             Toast.makeText(this, "Email/Password login failed", Toast.LENGTH_SHORT).show()
                         }
                     }
             } else {
-                // Handle empty email or password fields here (e.g., display an error message).
-                Toast.makeText(this, "Email and password are required.", Toast.LENGTH_SHORT).show()
+                if (!email.isNotEmpty()) {
+                    Toast.makeText(this, "Enter the Email", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Toast.makeText(this, "Enter the Password", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
         }
     }
@@ -82,7 +93,6 @@ class LoginPage : AppCompatActivity() {
                 val account = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account.idToken)
             } catch (e: ApiException) {
-                // Handle Google sign-in failure here
                 Log.w(TAG, "Google sign-in failed", e)
             }
         }
@@ -97,14 +107,16 @@ class LoginPage : AppCompatActivity() {
                     // You can redirect to the main activity here
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
-                    finish() // Optional, to close the login activity if you don't want the user to go back to it
-
-                    // You can also save user data to Firebase Realtime Database or Firestore
+                    finish()
                 } else {
                     // Handle Google sign-in failure here
                     Log.e(TAG, "Google sign-in failed", task.exception)
                     // Display an error message or handle the failure in some way
-                    Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        "Google Sign-In failed Check if this mail is signed up ",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
     }
