@@ -38,9 +38,7 @@ class Signup : AppCompatActivity() {
                 mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
-                            // Email/password signup was successful.
-                            // You can handle successful signup here.
-                            // For example, you can add the user's information to the database.
+
                             val user = mAuth.currentUser
                             if (user != null) {
                                 val email = user.email
