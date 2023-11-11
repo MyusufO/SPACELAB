@@ -14,6 +14,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 
 
 class LoginPage : AppCompatActivity() {
@@ -28,13 +32,18 @@ class LoginPage : AppCompatActivity() {
         // Check if the user is already logged in
         val currentUser = mAuth.currentUser
         if (currentUser != null) {
-            // A user is already logged in.
-            // You can take appropriate action here.
-            // For example, you can directly navigate to the main activity.
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-            return
+            val userEmail = currentUser.email
+            if (userEmail != null) {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            else{
+                            val intent = Intent(this, Signup::class.java)
+                            startActivity(intent)
+                            finish()
+            }
+
         }
 
         // Configure Google Sign-In
@@ -72,11 +81,13 @@ class LoginPage : AppCompatActivity() {
                             Toast.makeText(this, "Email/Password login failed", Toast.LENGTH_SHORT).show()
                         }
                     }
-            } else {
+            }
+            else {
                 if (!email.isNotEmpty()) {
                     Toast.makeText(this, "Enter the Email", Toast.LENGTH_SHORT)
                         .show()
-                } else {
+                }
+                else {
                     Toast.makeText(this, "Enter the Password", Toast.LENGTH_SHORT)
                         .show()
                 }
