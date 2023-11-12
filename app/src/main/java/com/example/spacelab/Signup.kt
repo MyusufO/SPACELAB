@@ -53,37 +53,11 @@ class Signup : AppCompatActivity() {
         emailPasswordSignupButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
+            val boool:Boolean=email.isNotEmpty()
+            if (boool && isPasswordValid(password)) {
+                userExistsInYourSystem(email, password)
 
-            // Checks if email is not empty and password length isnt small
-            if (email.isNotEmpty() && isPasswordValid(password)) {
-                // Checks if the user account is new
-                userExistsInYourSystem(email){Exists->
-                        if(!Exists){
-                            mAuth.createUserWithEmailAndPassword(email, password)
-                                .addOnCompleteListener(this) { task ->
-                                    if (task.isSuccessful) {
-                                        val user = mAuth.currentUser
-                                        if (user != null) {
-                                            val email = user.email
-                                            if (email != null) {
-                                                val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-                                                val reference: DatabaseReference = db.getReference("Users")
-                                                val newUser = reference.push()
-                                                newUser.setValue(email)
-                                                val intent = Intent(this, MainActivity::class.java)
-                                                startActivity(intent)
-                                            }
-                                        }
-                                    } else {
-                                        // Handle signup failure here (e.g., display an error message).
-                                        Toast.makeText(this, "Email/password signup failed.", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                        }
-                        else{
-                            Toast.makeText(this, "Account already exists.", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                Toast.makeText(this,"Success",Toast.LENGTH_SHORT).show()
             }
             else {
                 Toast.makeText(this, "Invalid email or password.", Toast.LENGTH_SHORT).show()
@@ -102,7 +76,8 @@ class Signup : AppCompatActivity() {
     }
 
     private fun isPasswordValid(password: String): Boolean {
-        return password.length >= 6
+        val bool:Boolean=password.length>=6
+        return bool
     }
 
     private fun userExistsInYourSystem(email: String, callback: (Boolean) -> Unit) {
@@ -119,8 +94,7 @@ class Signup : AppCompatActivity() {
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                // Handle any errors that may occur during the read operation
-                callback(false) // Consider it as not existing in case of an error
+                callback(false)
             }
         })
     }
@@ -151,16 +125,62 @@ class Signup : AppCompatActivity() {
                         val email = user.email
                         if (email != null) {
                             val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-                            val reference: DatabaseReference = db.getReference("GoogleUsers")
+                            val reference: DatabaseReference = db.getReference("Users")
                             val newUser = reference.push()
-                            newUser.setValue(email)
+                            newUser.child("email").setValue(email)
+                            val intent = Intent(this, MainActivity::class.java)
+                            startActivity(intent)
+
                         }
                     }
                     // Sign in with Google successful, you can redirect to the main activity
-                } else {
+                }
+                else {
                     // Handle Google sign-in failure here
                 }
             }
+    }
+    fun userExistsInYourSystem(email: String, password: String) {
+        val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
+
+        // Check if the user already exists
+        mAuth.fetchSignInMethodsForEmail(email).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val signInMethods = task.result?.signInMethods
+                if (signInMethods == null || signInMethods.isEmpty()) {
+                    // User does not exist
+                    mAuth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this) { createTask ->
+                            if (createTask.isSuccessful) {
+                                val user = mAuth.currentUser
+                                if (user != null) {
+                                    val userEmail = user.email
+                                    if (userEmail != null) {
+                                        val db: FirebaseDatabase = FirebaseDatabase.getInstance()
+                                        val reference: DatabaseReference = db.getReference("Users")
+                                        val newUser = reference.push()
+                                        newUser.child("email").setValue(userEmail)
+
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        startActivity(intent)
+                                    }
+                                }
+                            }
+                            else {
+                                Toast.makeText(this, "Email/password signup failed.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                }
+                else {
+                    // User already exists
+                    Toast.makeText(this, "Account already exists.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            else
+            {
+                Toast.makeText(this, "Error checking user existence.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     companion object {
