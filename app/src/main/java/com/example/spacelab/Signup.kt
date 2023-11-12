@@ -3,9 +3,13 @@ package com.example.spacelab
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import android.widget.TextView
+import android.text.SpannableString
+import android.text.style.UnderlineSpan
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -20,16 +24,31 @@ import com.google.firebase.database.ValueEventListener
 
 class Signup : AppCompatActivity() {
 
+    //checking the text link
+    fun openlogin(view: View){
+        val intent = Intent(this,LoginPage::class.java)
+        startActivity(intent)
+    }
+
     private lateinit var mAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
+
+        //checking the underlining
+        val mTextView = findViewById<TextView>(R.id.already_member)
+        val mString = "Already a member?"
+        val mSpannableString = SpannableString(mString)
+        mSpannableString.setSpan(UnderlineSpan(), 0, mSpannableString.length, 0)
+        mTextView.text = mSpannableString
+
+
         mAuth = FirebaseAuth.getInstance()
         val emailEditText = findViewById<EditText>(R.id.SignupLogin)
         val passwordEditText = findViewById<EditText>(R.id.SignupPassword)
-        val emailPasswordSignupButton = findViewById<Button>(R.id.SignupConfirm)
+        val emailPasswordSignupButton = findViewById<Button>(R.id.btn_continue)
 
         emailPasswordSignupButton.setOnClickListener {
             val email = emailEditText.text.toString()
@@ -48,7 +67,7 @@ class Signup : AppCompatActivity() {
         // Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
         val googleSignInClient = GoogleSignIn.getClient(this, gso)
-        val googleSignInButton = findViewById<Button>(R.id.Signupconfirm)
+        val googleSignInButton = findViewById<Button>(R.id.btn_gmail)
 
         googleSignInButton.setOnClickListener {
             val signInIntent = googleSignInClient.signInIntent

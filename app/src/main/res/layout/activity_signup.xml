@@ -4,64 +4,136 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Signup">
 
     <!-- Add the Google Sign-In button here -->
 
-    <Button
-        android:id="@+id/Signupconfirm"
-        android:layout_width="148dp"
-        android:layout_height="74dp"
-        android:layout_marginStart="120dp"
-        android:text="Google SignIn"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SignupConfirm"
-        app:layout_constraintVertical_bias="0.985" />
 
     <Button
-        android:id="@+id/SignupConfirm"
-        android:layout_width="115dp"
-        android:layout_height="54dp"
-        android:text="SignUp"
-
+        android:id="@+id/btn_gmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="60dp"
+        android:background="@drawable/bg_bt_google"
+        android:drawableStart="@drawable/iccc_google"
+        android:paddingHorizontal="35dp"
+        android:text="Continue with Google"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.54" />
+        app:layout_constraintVertical_bias="0.765" />
+
+    <Button
+        android:id="@+id/btn_continue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="60dp"
+        android:background="@drawable/bg_bt_continue"
+        android:paddingHorizontal="35dp"
+        android:text="Continue"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.566"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.603" />
 
     <EditText
         android:id="@+id/SignupPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="275dp"
+        android:layout_height="50dp"
+        android:layout_marginHorizontal="60dp"
+        android:background="@drawable/bg_edt_mail"
+        android:drawableStart="@drawable/ic_lock"
+        android:drawablePadding="5dp"
         android:ems="10"
         android:hint="@string/password"
         android:inputType="textPassword"
+        android:longClickable="false"
+        android:textColorHint="#ABB3BD"
+        android:textColor="@color/cardview_dark_background"
         android:minHeight="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/SignupConfirm"
+        android:paddingLeft="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.447"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.766" />
+        app:layout_constraintVertical_bias="0.45" />
 
     <EditText
         android:id="@+id/SignupLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="60dp"
+        android:layout_width="275dp"
+        android:layout_height="50dp"
         android:autofillHints=""
+        android:background="@drawable/bg_edt_mail"
         android:ems="10"
         android:hint="@string/example_mail_com"
+        android:textColorHint="#ABB3BD"
+        android:textColor="@color/cardview_dark_background"
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/SignupPassword"
+        android:drawableStart="@drawable/ic_mail"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.447"
+        android:paddingLeft="5dp"
+        app:layout_constraintHorizontal_bias="0.441"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.816"
+        app:layout_constraintVertical_bias="0.339"
         tools:ignore="LabelFor" />
+
+    <TextView
+        android:layout_width="103dp"
+        android:layout_height="29dp"
+        android:text="OR"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="17dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.678" />
+
+    <TextView
+        android:id="@+id/txt_Login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:onClick="openlogin"
+        android:text="Log in"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.694"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.866" />
+
+    <TextView
+        android:id="@+id/already_member"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Already a member?"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.401"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.865" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
