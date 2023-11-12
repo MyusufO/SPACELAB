@@ -10,55 +10,58 @@
 
     <Button
         android:id="@+id/Signupconfirm"
-        android:layout_width="105dp"
-        android:layout_height="77dp"
-        android:layout_marginStart="176dp"
-        android:text="@string/button"
+        android:layout_width="148dp"
+        android:layout_height="74dp"
+        android:layout_marginStart="120dp"
+        android:text="Google SignIn"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.775" />
+        app:layout_constraintTop_toBottomOf="@+id/SignupConfirm"
+        app:layout_constraintVertical_bias="0.985" />
 
     <Button
         android:id="@+id/SignupConfirm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
+        android:layout_width="115dp"
+        android:layout_height="54dp"
+        android:text="SignUp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.475"
+        app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.636" />
+        app:layout_constraintVertical_bias="0.54" />
 
     <EditText
         android:id="@+id/SignupPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:hint="@string/password"
         android:inputType="textPassword"
         android:minHeight="48dp"
-        android:hint="@string/password"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/SignupConfirm"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.447"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.766" />
 
     <EditText
         android:id="@+id/SignupLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autofillHints=""
         android:ems="10"
+        android:hint="@string/example_mail_com"
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
-        android:hint="@string/example_mail_com"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/SignupPassword"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.482"
+        app:layout_constraintHorizontal_bias="0.447"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.142"
-        android:autofillHints=""
+        app:layout_constraintVertical_bias="0.816"
         tools:ignore="LabelFor" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
