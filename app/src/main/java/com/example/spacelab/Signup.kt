@@ -106,13 +106,17 @@ class Signup : AppCompatActivity() {
                         val email = user.email
                         if (email != null) {
                             val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-                            val reference: DatabaseReference = db.getReference("GoogleUsers")
+                            val reference: DatabaseReference = db.getReference("Users")
                             val newUser = reference.push()
                             newUser.setValue(email)
+                            val intent = Intent(this, MainActivity::class.java)
+                            startActivity(intent)
+
                         }
                     }
                     // Sign in with Google successful, you can redirect to the main activity
-                } else {
+                }
+                else {
                     // Handle Google sign-in failure here
                 }
             }
@@ -125,7 +129,7 @@ class Signup : AppCompatActivity() {
             if (task.isSuccessful) {
                 val signInMethods = task.result?.signInMethods
                 if (signInMethods == null || signInMethods.isEmpty()) {
-                    // User does not exist, proceed with account creation
+                    // User does not exist
                     mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(this) { createTask ->
                             if (createTask.isSuccessful) {
