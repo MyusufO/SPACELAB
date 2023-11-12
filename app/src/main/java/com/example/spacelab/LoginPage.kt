@@ -32,8 +32,8 @@ class LoginPage : AppCompatActivity() {
 
         val googleSignInButton = findViewById<Button>(R.id.Loginconfirm)
         googleSignInButton.setOnClickListener {
-            val intent = Intent(this, Signup::class.java)
-            startActivity(intent)
+            val signInIntent = googleSignInClient.signInIntent
+            startActivityForResult(signInIntent, RC_SIGN_IN)
         }
 
         val emailEditText = findViewById<EditText>(R.id.LoginEmail)

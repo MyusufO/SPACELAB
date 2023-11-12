@@ -7,14 +7,16 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var notesRecyclerView: RecyclerView
+    private lateinit var notesAdapter: NotesAdapter
+    private lateinit var notesList: MutableList<Note>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +24,14 @@ class MainActivity : AppCompatActivity() {
 
         val add = findViewById<Button>(R.id.addNotes)
         val currentuser = FirebaseAuth.getInstance().currentUser
+
+        notesRecyclerView = findViewById(R.id.notesRecyclerView)
+        notesList = mutableListOf()
+        notesAdapter = NotesAdapter(notesList)
+
+        val layoutManager = LinearLayoutManager(this)
+        notesRecyclerView.layoutManager = layoutManager
+        notesRecyclerView.adapter = notesAdapter
 
         if (currentuser != null) {
             val mail = currentuser.email
@@ -50,11 +60,11 @@ class MainActivity : AppCompatActivity() {
 
                                 for (snapshot in dataSnapshot.children) {
                                     val userKey = snapshot.key
-                                    val userEmail = snapshot.getValue()
+                                    val userEmail = snapshot.child("email").getValue()
 
                                     if (userEmail == mail) {
                                         val reference1 = db.getReference("Users/$userKey")
-                                        val child = reference1.child(userInput)
+                                        val child = reference1.child("notes").child(userInput)
 
                                         child.addListenerForSingleValueEvent(object : ValueEventListener {
                                             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -70,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                                                     // Child node doesn't exist
 
                                                     val intent = Intent(this@MainActivity, CreateNote::class.java)
-                                                    intent.putExtra("path","Users/$userKey/$userInput")
+                                                    intent.putExtra("path","Users/$userKey/notes/$userInput")
                                                     startActivity(intent)
                                                 }
                                             }
@@ -94,6 +104,39 @@ class MainActivity : AppCompatActivity() {
                     dialog.dismiss()
                 }
             }
+
+            loadNotesFromDatabase(mail)
         }
+    }
+
+    private fun loadNotesFromDatabase(userEmail: String?) {
+        val db: FirebaseDatabase = FirebaseDatabase.getInstance()
+        val reference: DatabaseReference = db.getReference("Users")
+
+        reference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                notesList.clear()
+
+                for (snapshot in dataSnapshot.children) {
+                    val userEmailFromDB = snapshot.child("email").getValue(String::class.java)
+
+                    if (userEmail == userEmailFromDB) {
+                        for (noteSnapshot in snapshot.child("notes").children) {
+                            val noteTitle = noteSnapshot.key
+                            val noteContent = noteSnapshot.getValue(String::class.java)
+
+                            if (noteTitle != null && noteContent != null) {
+                                notesList.add(Note(noteTitle, noteContent))
+                            }
+                        }
+                        notesAdapter.notifyDataSetChanged()
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("Error: ${databaseError.message}")
+            }
+        })
     }
 }

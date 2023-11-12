@@ -108,7 +108,7 @@ class Signup : AppCompatActivity() {
                             val db: FirebaseDatabase = FirebaseDatabase.getInstance()
                             val reference: DatabaseReference = db.getReference("Users")
                             val newUser = reference.push()
-                            newUser.setValue(email)
+                            newUser.child("email").setValue(email)
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
 
@@ -140,7 +140,7 @@ class Signup : AppCompatActivity() {
                                         val db: FirebaseDatabase = FirebaseDatabase.getInstance()
                                         val reference: DatabaseReference = db.getReference("Users")
                                         val newUser = reference.push()
-                                        newUser.setValue(userEmail)
+                                        newUser.child("email").setValue(userEmail)
 
                                         val intent = Intent(this, MainActivity::class.java)
                                         startActivity(intent)
@@ -156,7 +156,9 @@ class Signup : AppCompatActivity() {
                     // User already exists
                     Toast.makeText(this, "Account already exists.", Toast.LENGTH_SHORT).show()
                 }
-            } else {
+            }
+            else
+            {
                 Toast.makeText(this, "Error checking user existence.", Toast.LENGTH_SHORT).show()
             }
         }
