@@ -32,10 +32,6 @@
 
         </activity>
         <activity
-            android:name=".bothpage"
-            android:exported="true"/>
-
-        <activity
             android:name=".MainActivity"
             android:exported="true" />
     </application>

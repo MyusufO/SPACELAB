@@ -33,6 +33,22 @@ class Signup : AppCompatActivity() {
     private lateinit var mAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        mAuth = FirebaseAuth.getInstance()
+        val currentUser = mAuth.currentUser
+        if (currentUser != null) {
+            val userEmail = currentUser.email
+            if (userEmail != null) {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            else{
+                val intent = Intent(this, Signup::class.java)
+                startActivity(intent)
+                finish()
+            }
+
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 

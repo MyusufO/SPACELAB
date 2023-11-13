@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         val add = findViewById<Button>(R.id.addNotes)
         val currentuser = FirebaseAuth.getInstance().currentUser
+        val logout=findViewById<Button>(R.id.logout)
 
         notesRecyclerView = findViewById(R.id.notesRecyclerView)
         notesList = mutableListOf()
@@ -36,6 +37,12 @@ class MainActivity : AppCompatActivity() {
         if (currentuser != null) {
             val mail = currentuser.email
 
+            logout.setOnClickListener {
+                FirebaseAuth.getInstance().signOut()
+                val intent = Intent(this, LoginPage::class.java)
+                startActivity(intent)
+                finish()
+            }
             add.setOnClickListener {
                 val dialog = Dialog(this)
                 dialog.setContentView(R.layout.alertbox)
