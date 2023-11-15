@@ -28,20 +28,20 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    // Exit button
-    /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    //Assigning tasks to carry out to the items inside toolbar
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.exit -> {
-                android.os.Process.killProcess(android.os.Process.myPid())
-                System.exit(1)
+            R.id.out -> {
+                FirebaseAuth.getInstance().signOut()
+                startActivity(Intent(this@MainActivity, LoginPage::class.java))
+                finish()
             }
-
             else -> {
                 // Handle other menu item clicks if needed
             }
         }
         return super.onOptionsItemSelected(item)
-    }*/
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,14 +91,6 @@ class MainActivity : AppCompatActivity() {
                 // Load existing notes from the database
                 loadNotesFromDatabase(mail)
 
-            // Logout button functionality
-            val logout=findViewById<Button>(R.id.logout)
-            logout.setOnClickListener {
-                FirebaseAuth.getInstance().signOut()
-                val intent = Intent(this, LoginPage::class.java)
-                startActivity(intent)
-                finish()
-            }
 
             // Add notes button functionality
             val add = findViewById<Button>(R.id.addNotes)
