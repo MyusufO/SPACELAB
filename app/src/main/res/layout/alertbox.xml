@@ -1,8 +1,7 @@
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:padding="16dp">
 
     <!-- EditText for user input -->
@@ -11,14 +10,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter your text"
-        android:minHeight="48dp"
-         />
+        android:minHeight="48dp" />
+
+    <!-- AutoCompleteTextView -->
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editText"
+        android:layout_marginTop="16dp"
+        android:text="AutoCompleteTextView" />
 
     <!-- Buttons for Okay and Cancel -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_below="@id/autoCompleteTextView"
         android:layout_marginTop="16dp">
 
         <Button
@@ -26,13 +34,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Okay"/>
+            android:text="Okay" />
 
         <Button
             android:id="@+id/btnCancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Cancel"/>
+            android:text="Cancel" />
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>
