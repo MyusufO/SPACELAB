@@ -34,6 +34,9 @@ class CreateNote : AppCompatActivity() {
                 val reference: DatabaseReference = db.getReference(username)
                 reference.setValue(inputText)
             }
+            Toast.makeText(this, "Note saved ", Toast.LENGTH_SHORT).show()
+            val intent=Intent(this,MainActivity::class.java)
+            startActivity(intent)
         }
 
         cancelButton.setOnClickListener {

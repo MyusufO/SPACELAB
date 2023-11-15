@@ -16,6 +16,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 class LoginPage : AppCompatActivity() {
@@ -69,6 +74,44 @@ class LoginPage : AppCompatActivity() {
                 mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
+                            val db: FirebaseDatabase = FirebaseDatabase.getInstance()
+                            val reference: DatabaseReference = db.getReference("Users")
+                            reference.get().addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    val dataSnapshot = task.result
+                                    if (dataSnapshot != null) {
+                                        var childExist = false
+
+
+                                        for (snapshot in dataSnapshot.children) {
+                                            val userKey = snapshot.key
+                                            val userEmail = snapshot.child("email").getValue()
+
+                                            if (userEmail == email) {
+                                                val reference1 = db.getReference("Users/$userKey")
+                                                reference1.addListenerForSingleValueEvent(object :
+                                                    ValueEventListener {
+                                                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                                        childExist = dataSnapshot.exists()
+                                                            val intent = Intent(this@LoginPage, MainActivity::class.java)
+                                                            intent.putExtra("key",userKey)
+                                                            startActivity(intent)
+
+                                                    }
+
+                                                    override fun onCancelled(databaseError: DatabaseError) {
+                                                        println("Error: ${databaseError.message}")
+                                                    }
+                                                })
+                                            }
+                                        }
+                                    }
+                                }
+                                else {
+                                    // Handle the error
+                                    println("Error: ${task.exception?.message}")
+                                }
+                            }
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
 

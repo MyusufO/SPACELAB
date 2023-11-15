@@ -13,28 +13,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SPACELAB"
         tools:targetApi="31">
+
         <activity
             android:name=".CreateNote"
             android:exported="false" />
         <activity
             android:name=".Signup"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".LoginPage"
-            android:exported="true">
-
-        </activity>
-        <activity
-            android:name=".bothpage"
-            android:exported="true"/>
-
+            android:exported="true"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="true" />
