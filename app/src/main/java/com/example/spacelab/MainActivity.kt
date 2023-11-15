@@ -3,9 +3,12 @@ package com.example.spacelab
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.text.toLowerCase
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +21,27 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notesRecyclerView: RecyclerView
     private lateinit var notesAdapter: NotesAdapter
     private lateinit var notesList: MutableList<Note>
+
+    //Opens the toolbar
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.home_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    // Exit button
+    /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.exit -> {
+                android.os.Process.killProcess(android.os.Process.myPid())
+                System.exit(1)
+            }
+
+            else -> {
+                // Handle other menu item clicks if needed
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
