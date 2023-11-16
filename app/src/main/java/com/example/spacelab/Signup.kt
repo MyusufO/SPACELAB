@@ -177,7 +177,7 @@ class Signup : AppCompatActivity() {
                                         val newUser = reference.push()
                                         newUser.child("email").setValue(userEmail)
 
-                                        val intent = Intent(this, MainActivity::class.java)
+                                        val intent = Intent(this, LoginPage::class.java)
                                         startActivity(intent)
                                     }
                                 }

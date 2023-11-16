@@ -15,6 +15,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -27,6 +28,17 @@ class LoginPage : AppCompatActivity() {
 
     //checking the text link
     fun opensignup(view: View){
+        //First check if the user logged in is verified
+        mAuth = FirebaseAuth.getInstance()
+        val currentUser = mAuth.currentUser
+        if(currentUser!=null) {
+            val user: FirebaseUser? = mAuth.getCurrentUser()
+            if (user != null) {
+                if (!user.isEmailVerified){
+                    mAuth.signOut()
+                }
+            }
+        }
         val intent = Intent(this,Signup::class.java)
         startActivity(intent)
     }
@@ -66,7 +78,7 @@ class LoginPage : AppCompatActivity() {
         emailPasswordLoginButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
-            mAuth
+
             if(email.equals("")||password.length<6){
                 Toast.makeText(this, "$password", Toast.LENGTH_SHORT).show()
             }
@@ -74,48 +86,54 @@ class LoginPage : AppCompatActivity() {
                 mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
-                            val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-                            val reference: DatabaseReference = db.getReference("Users")
-                            reference.get().addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    val dataSnapshot = task.result
-                                    if (dataSnapshot != null) {
-                                        var childExist = false
+                            val user: FirebaseUser? = mAuth.getCurrentUser()
+                            if(user?.isEmailVerified == true) {
+                                val db: FirebaseDatabase = FirebaseDatabase.getInstance()
+                                val reference: DatabaseReference = db.getReference("Users")
+                                reference.get().addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        val dataSnapshot = task.result
+                                        if (dataSnapshot != null) {
 
+                                            for (snapshot in dataSnapshot.children) {
+                                                val userKey = snapshot.key
+                                                val userEmail = snapshot.child("email").getValue()
 
-                                        for (snapshot in dataSnapshot.children) {
-                                            val userKey = snapshot.key
-                                            val userEmail = snapshot.child("email").getValue()
-
-                                            if (userEmail == email) {
-                                                val reference1 = db.getReference("Users/$userKey")
-                                                reference1.addListenerForSingleValueEvent(object :
-                                                    ValueEventListener {
-                                                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                                        childExist = dataSnapshot.exists()
-                                                            val intent = Intent(this@LoginPage, MainActivity::class.java)
-                                                            intent.putExtra("key",userKey)
+                                                if (userEmail == email) {
+                                                    val reference1 =
+                                                        db.getReference("Users/$userKey")
+                                                    reference1.addListenerForSingleValueEvent(object :
+                                                        ValueEventListener {
+                                                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                                            val intent = Intent(
+                                                                this@LoginPage,
+                                                                MainActivity::class.java
+                                                            )
+                                                            intent.putExtra("key", userKey)
                                                             startActivity(intent)
 
-                                                    }
+                                                        }
 
-                                                    override fun onCancelled(databaseError: DatabaseError) {
-                                                        println("Error: ${databaseError.message}")
-                                                    }
-                                                })
+                                                        override fun onCancelled(databaseError: DatabaseError) {
+                                                            println("Error: ${databaseError.message}")
+                                                        }
+                                                    })
+                                                }
                                             }
                                         }
+                                    } else {
+                                        // Handle the error
+                                        println("Error: ${task.exception?.message}")
                                     }
                                 }
-                                else {
-                                    // Handle the error
-                                    println("Error: ${task.exception?.message}")
-                                }
+                                val intent = Intent(this, MainActivity::class.java)
+                                startActivity(intent)
                             }
-                            val intent = Intent(this, MainActivity::class.java)
-                            startActivity(intent)
-
-                        } else {
+                            else{
+                                sendEmailVerification()
+                            }
+                        }
+                        else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(
                                 baseContext,
@@ -139,6 +157,42 @@ class LoginPage : AppCompatActivity() {
                 firebaseAuthWithGoogle(account.idToken)
             } catch (e: ApiException) {
                 Log.w(TAG, "Google sign-in failed", e)
+            }
+        }
+    }
+    private fun sendEmailVerification() {
+        val user = FirebaseAuth.getInstance().currentUser
+        user!!.sendEmailVerification()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Email sent successfully, inform the user
+                    Toast.makeText(
+                        applicationContext,
+                        "Verification email sent",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else {
+                    // If sending the email verification fails, display a message to the user.
+                    Toast.makeText(
+                        applicationContext,
+                        "Failed to send verification email",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mAuth = FirebaseAuth.getInstance()
+        val currentUser = mAuth.currentUser
+        if(currentUser!=null) {
+            val user: FirebaseUser? = mAuth.getCurrentUser()
+            if (user != null) {
+                if (!user.isEmailVerified){
+                    mAuth.signOut()
+                }
             }
         }
     }

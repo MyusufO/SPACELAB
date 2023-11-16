@@ -168,6 +168,25 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    override fun onPause() {
+        super.onPause()
+        notesList.clear()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val currentuser = FirebaseAuth.getInstance().currentUser
+        if (currentuser != null) {
+            val mail = currentuser.email
+
+
+
+            // Load existing notes from the database
+            loadNotesFromDatabase(mail)
+        }
+    }
+
 
     // Function to display notes on Screen
     private fun loadNotesFromDatabase(userEmail: String?) {
