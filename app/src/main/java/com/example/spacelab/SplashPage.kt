@@ -12,7 +12,7 @@ class SplashPage : AppCompatActivity() {
         setContentView(R.layout.activity_splash_page)
 
         Handler().postDelayed({
-            val iHome=Intent(this@SplashPage,LoginPage::class.java)
+            val iHome=Intent(this@SplashPage,Signup::class.java)
             startActivity(iHome)
             finish()
         },3000)

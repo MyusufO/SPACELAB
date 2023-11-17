@@ -76,6 +76,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
+    implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
 
 
     testImplementation("junit:junit:4.13.2")
