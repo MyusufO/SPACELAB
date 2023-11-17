@@ -206,7 +206,7 @@ class MainActivity : AppCompatActivity() {
 
                                         val intent = Intent(this@MainActivity, CreateNote::class.java)
                                         child.child("tag").setValue(tagtext)
-                                        intent.putExtra("path","Users/$userKey/notes/$userInput/text")
+                                        intent.putExtra("path","Users/$userKey/notes/$userInput")
                                         startActivity(intent)
                                     }
                                 }
