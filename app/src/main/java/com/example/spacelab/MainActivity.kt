@@ -75,7 +75,6 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
 
         val currentuser = FirebaseAuth.getInstance().currentUser
-
         if (currentuser == null) {
             // If the user is not logged in, redirect to the login page
             val intent = Intent(this, LoginPage::class.java)
@@ -84,80 +83,32 @@ class MainActivity : AppCompatActivity() {
         }
         else{
 
-                val mail = currentuser.email
+            val mail:String = currentuser.email!!
 
 
 
-                // Load existing notes from the database
-                loadNotesFromDatabase(mail)
+            // Load existing notes from the database
+            loadNotesFromDatabase(mail)
 
 
             // Add notes button functionality
             val add = findViewById<Button>(R.id.addNotes)
             add.setOnClickListener {
+
                 val dialog = Dialog(this)
+
                 dialog.setContentView(R.layout.alertbox)
                 dialog.setCancelable(false)
 
+
+                dialog.show()
                 val okayButton = dialog.findViewById<Button>(R.id.btnOkay)
                 val cancelButton = dialog.findViewById<Button>(R.id.btnCancel)
                 val editText = dialog.findViewById<EditText>(R.id.editText)
                 val Tag=dialog.findViewById<EditText>(R.id.Tag)
-                dialog.show()
-
                 // Okay button click listener
                 okayButton.setOnClickListener {
-                    val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-                    val reference: DatabaseReference = db.getReference("Users")
-                    reference.get().addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            val dataSnapshot = task.result
-                            if (dataSnapshot != null) {
-
-                                var childExist: Boolean
-                                var userInput = editText.text.toString()
-                                var tagtext= Tag.text.toString().lowercase()
-                                for (snapshot in dataSnapshot.children) {
-                                    val userKey = snapshot.key
-                                    val userEmail = snapshot.child("email").getValue()
-                                    if (userEmail == mail) {
-                                        val reference1 = db.getReference("Users/$userKey")
-                                        val child = reference1.child("notes").child(userInput)
-
-                                        child.addListenerForSingleValueEvent(object : ValueEventListener {
-                                            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                                childExist = dataSnapshot.exists()
-                                                if (childExist) {
-                                                    // Child node exists
-                                                    Toast.makeText(
-                                                        this@MainActivity,
-                                                        "Title Already Taken",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                }
-                                                else {
-                                                    // Child node doesn't exist
-
-                                                    val intent = Intent(this@MainActivity, CreateNote::class.java)
-                                                    child.child("tag").setValue(tagtext)
-                                                    intent.putExtra("path","Users/$userKey/notes/$userInput/text")
-                                                    startActivity(intent)
-                                                }
-                                            }
-
-                                            override fun onCancelled(databaseError: DatabaseError) {
-                                                println("Error: ${databaseError.message}")
-                                            }
-                                        })
-                                    }
-                                }
-                            }
-                        }
-                        else {
-                            // Handle the error
-                            println("Error: ${task.exception?.message}")
-                        }
-                    }
+                    path(mail,editText,Tag)
                     dialog.dismiss()
                 }
 
@@ -218,5 +169,62 @@ class MainActivity : AppCompatActivity() {
                 println("Error: ${databaseError.message}")
             }
         })
+    }
+
+    private fun path(mail:String,editText:EditText,Tag: EditText) {
+        val db: FirebaseDatabase = FirebaseDatabase.getInstance()
+        val reference: DatabaseReference = db.getReference("Users")
+        reference.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val dataSnapshot = task.result
+                if (dataSnapshot != null) {
+
+
+                    for (snapshot in dataSnapshot.children) {
+                        val userKey = snapshot.key
+                        val userEmail = snapshot.child("email").getValue()
+                        if (userEmail == mail) {
+                            var childExist: Boolean
+                            var userInput = editText.text.toString()
+                            var tagtext= Tag.text.toString().lowercase()
+                            val reference1 = db.getReference("Users/$userKey")
+                            val child = reference1.child("notes").child(userInput)
+
+                            child.addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                    childExist = dataSnapshot.exists()
+                                    if (childExist) {
+                                        // Child node exists
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            "Title Already Taken",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                    else {
+                                        // Child node doesn't exist
+
+                                        val intent = Intent(this@MainActivity, CreateNote::class.java)
+                                        child.child("tag").setValue(tagtext)
+                                        intent.putExtra("path","Users/$userKey/notes/$userInput/text")
+                                        startActivity(intent)
+                                    }
+                                }
+
+                                override fun onCancelled(databaseError: DatabaseError) {
+                                    println("Error: ${databaseError.message}")
+                                }
+                            })
+                        }
+
+                    }
+                }
+            }
+            else {
+                // Handle the error
+                println("Error: ${task.exception?.message}")
+            }
+        }
+
     }
 }
