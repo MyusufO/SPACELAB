@@ -96,24 +96,7 @@ class Signup : AppCompatActivity() {
         return bool
     }
 
-    private fun userExistsInYourSystem(email: String, callback: (Boolean) -> Unit) {
-        val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-        val path = "Users/$email"
-        val reference: DatabaseReference = db.getReference(path)
 
-        reference.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Handle the data from the dataSnapshot
-                val value = dataSnapshot.getValue(String::class.java)
-                val userExists = value != null
-                callback(userExists)
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                callback(false)
-            }
-        })
-    }
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

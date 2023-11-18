@@ -73,8 +73,8 @@ class CreateNote : AppCompatActivity() {
         // Set click listener for the "Save" button
         saveButton.setOnClickListener {
             val inputText = editText.text.toString()
-            val userKey=extractUserKey(username)
-            val imagesPath = "Images/$userKey"
+            val userKey = extractUserKey(username)
+            val imagesPath = "Images"
 
             // Save text in Firebase Database
             val reference: DatabaseReference = FirebaseDatabase.getInstance().getReference(username)
@@ -83,7 +83,7 @@ class CreateNote : AppCompatActivity() {
             // Save selected images in Firebase Storage and their download URLs in Firebase Database
             for (i in imageList.indices) {
                 val imagePath = "$imagesPath/$i"
-                val imagesReference = mStorageRef.child(imagePath)
+                val imagesReference = mStorageRef.child("$imagePath/$userKey")
 
                 // Upload image to Firebase Storage
                 imagesReference.putFile(imageList[i]!!)
@@ -108,7 +108,6 @@ class CreateNote : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
-
 
         // Set click listener for the "Cancel" button
         cancelButton.setOnClickListener {
@@ -138,6 +137,8 @@ class CreateNote : AppCompatActivity() {
             imageAdapter.notifyDataSetChanged()
         }
     }
+
+    // Function to extract the user key from the provided string
     fun extractUserKey(inputString: String): String? {
         val regex = Regex("""Users/([^/]+)/notes/\w+""")
         val matchResult = regex.find(inputString)

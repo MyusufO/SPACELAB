@@ -9,12 +9,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter text"
-        android:minHeight="48dp" />
+        android:minHeight="48dp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Use RecyclerView to display multiple images -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editText"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editText"
+        android:layout_below="@id/recyclerView"
         android:orientation="horizontal"
         android:layout_marginTop="16dp">
 
