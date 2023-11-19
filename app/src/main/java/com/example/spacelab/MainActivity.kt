@@ -4,11 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -84,7 +81,7 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
         }
     }
 
-    override fun onEditClicked(note: Note) {
+    override fun onEditClicked(note: Note, view: View) {
         val db: FirebaseDatabase = FirebaseDatabase.getInstance()
         val reference: DatabaseReference = db.getReference("Users")
         reference.get().addOnCompleteListener { task ->
