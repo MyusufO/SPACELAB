@@ -45,6 +45,12 @@ class LoginPage : AppCompatActivity() {
         startActivity(intent)
     }
 
+    //checking forgotpass text link
+    fun openforgotpass(view: View){
+        val intent = Intent(this,ForgotPass::class.java)
+        startActivity(intent)
+    }
+
     private lateinit var mAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
