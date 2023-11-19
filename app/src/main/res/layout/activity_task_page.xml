@@ -1,0 +1,69 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btnAddTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Task"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        />
+
+    <Button
+        android:id="@+id/btnAddReminder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Reminder"
+        android:layout_below="@id/btnAddTask"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        />
+
+    <!-- Section for displaying tasks -->
+    <TextView
+        android:id="@+id/tvTasksTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tasks"
+        android:layout_below="@id/btnAddReminder"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="16dp"
+        android:textStyle="bold"
+        />
+
+    <ListView
+        android:id="@+id/listViewTasks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTasksTitle"
+        android:layout_marginTop="8dp"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp"
+        />
+
+    <!-- Section for displaying reminders -->
+    <TextView
+        android:id="@+id/tvRemindersTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reminders"
+        android:layout_below="@id/listViewTasks"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="16dp"
+        android:textStyle="bold"
+        />
+
+    <ListView
+        android:id="@+id/listViewReminders"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvRemindersTitle"
+        android:layout_marginTop="8dp"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp"
+        />
+</RelativeLayout>
