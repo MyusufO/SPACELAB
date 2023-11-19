@@ -22,13 +22,21 @@
         android:minHeight="48dp"
         android:hint="Write a tag" />
 
+    <!-- Spinner for color selection -->
+    <Spinner
+        android:id="@+id/colorSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Tag"
+        android:layout_marginTop="16dp"
+        android:minHeight="48dp"/>
 
     <!-- Buttons for Okay and Cancel -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@id/Tag"
+        android:layout_below="@id/colorSpinner"
         android:layout_marginTop="16dp">
 
         <Button
@@ -46,4 +54,3 @@
             android:text="Cancel" />
     </LinearLayout>
 </RelativeLayout>
-
