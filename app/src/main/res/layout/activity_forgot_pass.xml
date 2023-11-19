@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/dialogForgot"
-    android:layout_margin="20dp"
+
+    android:background="@color/white"
     android:padding="20dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -56,13 +57,13 @@
         <Button
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:id="@+id/btnCancel"
+            android:id="@+id/btnBack"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="10dp"
             android:textColor="@color/white"
             android:textSize="14sp"
             android:background="@drawable/color_fill"
-            android:text="Cancel"
+            android:text="Back"
             android:layout_marginBottom="8dp"
             app:cornerRadius="20dp"
             android:layout_marginTop="10dp"
@@ -70,7 +71,7 @@
             app:layout_constraintTop_toBottomOf="@id/editBox"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnReset"/>
-        
+
         <Button
             android:layout_width="0dp"
             android:layout_height="50dp"
@@ -86,11 +87,11 @@
             app:cornerRadius="20dp"
             app:layout_constraintBottom_toBottomOf="@id/dialogBox"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btnCancel"/>
+            app:layout_constraintStart_toEndOf="@id/btnBack"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
