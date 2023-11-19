@@ -2,4 +2,15 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="noteRed">#FF5252</color>
+    <color name="noteGreen">#69F0AE</color>
+    <color name="noteBlue">#64B5F6</color>
+    <color name="noteYellow">#FFD740</color>
+    <color name="notePurple">#BA68C8</color>
+    <color name="noteOrange">#FFA726</color>
+    <color name="notePink">#FF4081</color>
+    <color name="noteCyan">#00BCD4</color>
+    <color name="noteBrown">#8D6E63</color>
+    <color name="noteGray">#BDBDBD</color>
+    <color name="noteWhite">#FFFFFF</color>
 </resources>
