@@ -204,10 +204,10 @@ class MainActivity : AppCompatActivity() {
                                     else {
                                         // Child node doesn't exist
 
-                                        /*val intent = Intent(this@MainActivity, CreateNote::class.java)
+                                        val intent = Intent(this@MainActivity, CreateNote::class.java)
                                         child.child("tag").setValue(tagtext)
                                         intent.putExtra("path","Users/$userKey/notes/$userInput")
-                                        startActivity(intent)*/
+                                        startActivity(intent)
                                     }
                                 }
 
