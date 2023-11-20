@@ -33,8 +33,7 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
         notesRecyclerView.adapter = notesAdapter
 
         if (currentuser != null) {
-            val mail = currentuser.email
-            loadNotesFromDatabase(mail)
+            loadNotesFromDatabase()
         }
     }
 
@@ -82,30 +81,10 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
     }
 
     override fun onEditClicked(note: Note, view: View) {
-        val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-        val reference: DatabaseReference = db.getReference("Users")
-        reference.get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val dataSnapshot = task.result
-                if (dataSnapshot != null) {
-                    for (snapshot in dataSnapshot.children) {
-                        val userKey = snapshot.key
-                        val userEmail = snapshot.child("email").getValue()
-                        if (userEmail == FirebaseAuth.getInstance().currentUser!!.email) {
-                            val reference1 = db.getReference("Users/$userKey")
-                            val child = reference1.child("notes").child(note.title)
-                            val pathAsString = child.toString()
-                            val intent = Intent(this@MainActivity, EditTextActivity::class.java)
-                            intent.putExtra("path", pathAsString)
-                            startActivity(intent)
-                            break
-                        }
-                    }
-                }
-            } else {
-                println("Error: ${task.exception?.message}")
-            }
-        }
+        val intent = Intent(this@MainActivity, EditTextActivity::class.java)
+        startActivity(intent)
+
+
     }
 
     override fun onStart() {
@@ -117,7 +96,7 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
             finish()
         } else {
             val mail: String = currentuser.email!!
-            loadNotesFromDatabase(mail)
+            loadNotesFromDatabase()
             val add = findViewById<Button>(R.id.addNotes)
             add.setOnClickListener {
                 val dialog = Dialog(this)
@@ -160,35 +139,27 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
         super.onResume()
         val currentuser = FirebaseAuth.getInstance().currentUser
         if (currentuser != null) {
-            val mail = currentuser.email
-            loadNotesFromDatabase(mail)
+            loadNotesFromDatabase()
         }
     }
 
-    private fun loadNotesFromDatabase(userEmail: String?) {
+    private fun loadNotesFromDatabase() {
         val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-        val reference: DatabaseReference = db.getReference("Users")
-
+        val reference: DatabaseReference = db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("email").child("notes")
         reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 notesList.clear()
-
                 for (snapshot in dataSnapshot.children) {
-                    val userEmailFromDB = snapshot.child("email").getValue(String::class.java)
-
-                    if (userEmail == userEmailFromDB) {
-                        for (noteSnapshot in snapshot.child("notes").children) {
-                            val noteTitle = noteSnapshot.key
-                            val noteContent = noteSnapshot.child("text").getValue(String::class.java)
-                            val noteColor = noteSnapshot.child("color").getValue(String::class.java)
-
-                            if (noteTitle != null && noteContent != null && noteColor != null) {
-                                notesList.add(Note(noteTitle, noteContent, noteColor))
-                            }
-                        }
-                        notesAdapter.notifyDataSetChanged()
+                    val noteTitle = snapshot.key
+                    val noteContent = snapshot.child("text").getValue(String::class.java)
+                    val noteColor = snapshot.child("color").getValue(String::class.java)
+                    if (noteTitle != null && noteContent != null && noteColor != null) {
+                        notesList.add(Note(noteTitle, noteContent, noteColor))
                     }
                 }
+                        notesAdapter.notifyDataSetChanged()
+
+
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -199,22 +170,14 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
 
     private fun path(mail: String, editText: EditText, Tag: EditText, colorSpinner: Spinner) {
         val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-        val reference: DatabaseReference = db.getReference("Users")
+        val reference: DatabaseReference = db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("email").child("notes")
         reference.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                val dataSnapshot = task.result
-                if (dataSnapshot != null) {
-                    for (snapshot in dataSnapshot.children) {
-                        val userKey = snapshot.key
-                        val userEmail = snapshot.child("email").getValue()
-                        if (userEmail == mail) {
                             var childExist: Boolean
                             var userInput = editText.text.toString()
                             val tagtext = Tag.text.toString().lowercase()
                             val selectedColor: String = colorSpinner.selectedItem.toString()
-                            val reference1 = db.getReference("Users/$userKey")
-                            val child = reference1.child("notes").child(userInput)
-
+                            val child = reference.child(userInput)
                             child.addListenerForSingleValueEvent(object : ValueEventListener {
                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                                     childExist = dataSnapshot.exists()
@@ -224,11 +187,12 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                                             "Title Already Taken",
                                             Toast.LENGTH_SHORT
                                         ).show()
-                                    } else {
+                                    }
+                                    else {
                                         val intent = Intent(this@MainActivity, CreateNote::class.java)
                                         child.child("tag").setValue(tagtext)
                                         child.child("color").setValue(selectedColor)
-                                        intent.putExtra("path", "Users/$userKey/notes/$userInput")
+
                                         startActivity(intent)
                                     }
                                 }
@@ -237,10 +201,11 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                                     println("Error: ${databaseError.message}")
                                 }
                             })
-                        }
-                    }
-                }
-            } else {
+
+
+
+            }
+            else {
                 println("Error: ${task.exception?.message}")
             }
         }

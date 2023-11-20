@@ -125,8 +125,8 @@ class Signup : AppCompatActivity() {
                         if (email != null) {
                             val db: FirebaseDatabase = FirebaseDatabase.getInstance()
                             val reference: DatabaseReference = db.getReference("Users")
-                            val newUser = reference.push()
-                            newUser.child("email").setValue(email)
+                            val userID=user.uid
+                            reference.child(userID).child("email").setValue(email)
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
 
@@ -157,8 +157,8 @@ class Signup : AppCompatActivity() {
                                     if (userEmail != null) {
                                         val db: FirebaseDatabase = FirebaseDatabase.getInstance()
                                         val reference: DatabaseReference = db.getReference("Users")
-                                        val newUser = reference.push()
-                                        newUser.child("email").setValue(userEmail)
+                                        val userID=user.uid
+                                        reference.child(userID).child("email").setValue(userEmail)
 
                                         val intent = Intent(this, LoginPage::class.java)
                                         startActivity(intent)
