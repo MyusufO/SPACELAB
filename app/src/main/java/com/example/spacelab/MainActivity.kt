@@ -1,4 +1,6 @@
+// MainActivity.kt
 package com.example.spacelab
+
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
@@ -49,6 +51,12 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                 startActivity(Intent(this@MainActivity, LoginPage::class.java))
                 finish()
             }
+            R.id.SortTag -> {
+                sortNotesByTag()
+            }
+            R.id.SortColor -> {
+                sortNotesByColor()
+            }
             else -> {
                 // Handle other menu item clicks if needed
             }
@@ -82,9 +90,8 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
 
     override fun onEditClicked(note: Note, view: View) {
         val intent = Intent(this@MainActivity, EditTextActivity::class.java)
+        intent.putExtra("title", note.title)
         startActivity(intent)
-
-
     }
 
     override fun onStart() {
@@ -145,7 +152,9 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
 
     private fun loadNotesFromDatabase() {
         val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-        val reference: DatabaseReference = db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("email").child("notes")
+        val reference: DatabaseReference =
+            db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid)
+                .child("notes")
         reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 notesList.clear()
@@ -153,13 +162,12 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                     val noteTitle = snapshot.key
                     val noteContent = snapshot.child("text").getValue(String::class.java)
                     val noteColor = snapshot.child("color").getValue(String::class.java)
-                    if (noteTitle != null && noteContent != null && noteColor != null) {
-                        notesList.add(Note(noteTitle, noteContent, noteColor))
+                    val noteTag = snapshot.child("tag").getValue(String::class.java)
+                    if (noteTitle != null && noteContent != null && noteColor != null && noteTag != null) {
+                        notesList.add(Note(noteTitle, noteContent, noteColor, noteTag))
                     }
                 }
-                        notesAdapter.notifyDataSetChanged()
-
-
+                notesAdapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -170,44 +178,53 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
 
     private fun path(mail: String, editText: EditText, Tag: EditText, colorSpinner: Spinner) {
         val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-        val reference: DatabaseReference = db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("email").child("notes")
+        val reference: DatabaseReference =
+            db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid)
+                .child("notes")
         reference.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                            var childExist: Boolean
-                            var userInput = editText.text.toString()
-                            val tagtext = Tag.text.toString().lowercase()
-                            val selectedColor: String = colorSpinner.selectedItem.toString()
-                            val child = reference.child(userInput)
-                            child.addListenerForSingleValueEvent(object : ValueEventListener {
-                                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                    childExist = dataSnapshot.exists()
-                                    if (childExist) {
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            "Title Already Taken",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                    else {
-                                        val intent = Intent(this@MainActivity, CreateNote::class.java)
-                                        child.child("tag").setValue(tagtext)
-                                        child.child("color").setValue(selectedColor)
+                var childExist: Boolean
+                var userInput = editText.text.toString()
+                val tagtext = Tag.text.toString().lowercase()
+                val selectedColor: String = colorSpinner.selectedItem.toString()
+                val child = reference.child(userInput)
+                child.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        childExist = dataSnapshot.exists()
+                        if (childExist) {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Title Already Taken",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            val intent = Intent(this@MainActivity, CreateNote::class.java)
+                            child.child("tag").setValue(tagtext)
+                            child.child("color").setValue(selectedColor)
+                            intent.putExtra("title", userInput)
+                            startActivity(intent)
+                        }
+                    }
 
-                                        startActivity(intent)
-                                    }
-                                }
-
-                                override fun onCancelled(databaseError: DatabaseError) {
-                                    println("Error: ${databaseError.message}")
-                                }
-                            })
-
-
-
-            }
-            else {
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        println("Error: ${databaseError.message}")
+                    }
+                })
+            } else {
                 println("Error: ${task.exception?.message}")
             }
         }
+    }
+
+    // Sort notes by tag
+    private fun sortNotesByTag() {
+        notesList.sortBy { it.tag }
+        notesAdapter.notifyDataSetChanged()
+    }
+
+    // Sort notes by color
+    private fun sortNotesByColor() {
+        notesList.sortBy { it.color }
+        notesAdapter.notifyDataSetChanged()
     }
 }

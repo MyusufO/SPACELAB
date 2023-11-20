@@ -9,7 +9,7 @@
         app:showAsAction="ifRoom|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView"/>
     <item
-        android:id="@+id/item1"
+        android:id="@+id/SortTag"
         android:title="item1"/>
 
     <item
@@ -18,8 +18,8 @@
         android:icon="@drawable/ic_logout"/>
 
     <item
-        android:id="@+id/exit"
-        android:title="Exit"
+        android:id="@+id/SortColor"
+        android:title="Sort by Color"
         android:icon="@drawable/ic_exit"/>
 
 

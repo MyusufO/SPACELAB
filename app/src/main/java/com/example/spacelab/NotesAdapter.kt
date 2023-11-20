@@ -28,7 +28,6 @@ class NotesAdapter(
         val titleTextView: TextView = itemView.findViewById(R.id.noteTitleTextView)
         val contentTextView: TextView = itemView.findViewById(R.id.noteContentTextView)
         val optionsButton: Button = itemView.findViewById(R.id.optionsButton)
-        val colorView: View = itemView.findViewById(R.id.colorView)
         val notesContainer: LinearLayout = itemView.findViewById(R.id.notesContainer)
 
         init {
