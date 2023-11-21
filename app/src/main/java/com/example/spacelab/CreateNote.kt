@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -37,8 +38,7 @@ class CreateNote : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val extras = intent.extras
-        val username = extras?.getString("path")
-
+        val username = extras?.getString("title")
         setContentView(R.layout.activity_create_note)
 
         mButtonUpload = findViewById(R.id.image)
@@ -46,6 +46,7 @@ class CreateNote : AppCompatActivity() {
         editText = findViewById(R.id.editText)
         saveButton = findViewById(R.id.saveButton)
         cancelButton = findViewById(R.id.cancelButton)
+
         // Add this line to initialize removeImageButton
         removeImageButton = findViewById(R.id.removeImageButton)
 
@@ -95,7 +96,7 @@ class CreateNote : AppCompatActivity() {
 
             for (i in imageList.indices) {
                 val imagePath = "$imagesPath/$i"
-                val imagesReference = mStorageRef.child("$imagePath/$userKey")
+                val imagesReference = mStorageRef.child("$imagePath/$userID")
 
                 imagesReference.putFile(imageList[i]!!)
                     .addOnSuccessListener { taskSnapshot ->
@@ -140,9 +141,6 @@ class CreateNote : AppCompatActivity() {
             mImageView.adapter?.notifyDataSetChanged()
         }
     }
-
-
-
 
     private fun removeImage(position: Int) {
         if (position in 0 until imageList.size) {
