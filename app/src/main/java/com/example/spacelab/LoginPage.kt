@@ -56,9 +56,7 @@ class LoginPage : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_page)
-        //val intent=Intent(this,TaskPage::class.java)
-        //startActivity(intent)
-        //finish()
+
         //checking the underlining
         val mTextView = findViewById<TextView>(R.id.link_NewHere)
         val mString = "New here?"
@@ -140,7 +138,7 @@ class LoginPage : AppCompatActivity() {
                                 startActivity(intent)
                             }
                             else{
-                                sendEmailVerification()
+                                //sendEmailVerification()
                             }
                         }
                         else {
@@ -170,7 +168,8 @@ class LoginPage : AppCompatActivity() {
             }
         }
     }
-    private fun sendEmailVerification() {
+
+    /*private fun sendEmailVerification() {
         val user = FirebaseAuth.getInstance().currentUser
         user!!.sendEmailVerification()
             .addOnCompleteListener { task ->
@@ -191,7 +190,7 @@ class LoginPage : AppCompatActivity() {
                     ).show()
                 }
             }
-    }
+    }*/
 
     override fun onStop() {
         super.onStop()
