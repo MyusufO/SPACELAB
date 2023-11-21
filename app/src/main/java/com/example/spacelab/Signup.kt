@@ -1,5 +1,4 @@
 package com.example.spacelab
-
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -21,17 +20,13 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-
 class Signup : AppCompatActivity() {
-
     //checking the text link
     fun openlogin(view: View){
         val intent = Intent(this,LoginPage::class.java)
         startActivity(intent)
     }
-
     private lateinit var mAuth: FirebaseAuth
-
     override fun onCreate(savedInstanceState: Bundle?) {
         mAuth = FirebaseAuth.getInstance()
         val currentUser = mAuth.currentUser
@@ -47,61 +42,46 @@ class Signup : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             }
-
         }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
-
-
         //checking the underlining
         val mTextView = findViewById<TextView>(R.id.already_member)
         val mString = "Already a member?"
         val mSpannableString = SpannableString(mString)
         mSpannableString.setSpan(UnderlineSpan(), 0, mSpannableString.length, 0)
         mTextView.text = mSpannableString
-
-
         mAuth = FirebaseAuth.getInstance()
         val emailEditText = findViewById<EditText>(R.id.SignupLogin)
         val passwordEditText = findViewById<EditText>(R.id.SignupPassword)
         val emailPasswordSignupButton = findViewById<Button>(R.id.btn_continue)
-
         emailPasswordSignupButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
             val boool:Boolean=email.isNotEmpty()
             if (boool && isPasswordValid(password)) {
                 userExistsInYourSystem(email, password)
-
                 Toast.makeText(this,"Success",Toast.LENGTH_SHORT).show()
             }
             else {
                 Toast.makeText(this, "Invalid email or password.", Toast.LENGTH_SHORT).show()
             }
         }
-
         // Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
         val googleSignInClient = GoogleSignIn.getClient(this, gso)
         val googleSignInButton = findViewById<Button>(R.id.btn_gmail)
-
         googleSignInButton.setOnClickListener {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
     }
-
     private fun isPasswordValid(password: String): Boolean {
         val bool:Boolean=password.length>=6
         return bool
     }
-
-
-
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
@@ -113,7 +93,6 @@ class Signup : AppCompatActivity() {
             }
         }
     }
-
     private fun firebaseAuthWithGoogle(idToken: String?) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         mAuth.signInWithCredential(credential)
@@ -141,7 +120,6 @@ class Signup : AppCompatActivity() {
     }
     fun userExistsInYourSystem(email: String, password: String) {
         val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
-
         // Check if the user already exists
         mAuth.fetchSignInMethodsForEmail(email).addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -181,7 +159,6 @@ class Signup : AppCompatActivity() {
             }
         }
     }
-
     companion object {
         private const val RC_SIGN_IN = 9001
         private const val TAG = "SignupActivity"

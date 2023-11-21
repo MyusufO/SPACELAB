@@ -1,6 +1,4 @@
-// MainActivity.kt
 package com.example.spacelab
-
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
@@ -13,23 +11,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-
 class MainActivity : AppCompatActivity(), NoteActionListener {
-
     private lateinit var notesRecyclerView: RecyclerView
     private lateinit var notesAdapter: NotesAdapter
     private lateinit var notesList: MutableList<Note>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         val currentuser = FirebaseAuth.getInstance().currentUser
-
         notesRecyclerView = findViewById(R.id.notesRecyclerView)
         notesList = mutableListOf()
         notesAdapter = NotesAdapter(notesList, this)
-
         val layoutManager = LinearLayoutManager(this)
         notesRecyclerView.layoutManager = layoutManager
         notesRecyclerView.adapter = notesAdapter
@@ -43,7 +35,6 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
         menuInflater.inflate(R.menu.home_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.out -> {
@@ -51,19 +42,12 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                 startActivity(Intent(this@MainActivity, LoginPage::class.java))
                 finish()
             }
-            R.id.SortTag -> {
-                sortNotesByTag()
-            }
-            R.id.SortColor -> {
-                sortNotesByColor()
-            }
             else -> {
                 // Handle other menu item clicks if needed
             }
         }
         return super.onOptionsItemSelected(item)
     }
-
     override fun onDeleteClicked(note: Note) {
         val db: FirebaseDatabase = FirebaseDatabase.getInstance()
         val reference: DatabaseReference = db.getReference("Users")
@@ -90,8 +74,9 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
 
     override fun onEditClicked(note: Note, view: View) {
         val intent = Intent(this@MainActivity, EditTextActivity::class.java)
-        intent.putExtra("title", note.title)
         startActivity(intent)
+
+
     }
 
     override fun onStart() {
@@ -115,7 +100,6 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                 val editText = dialog.findViewById<EditText>(R.id.editText)
                 val Tag = dialog.findViewById<EditText>(R.id.Tag)
                 val colorSpinner = dialog.findViewById<Spinner>(R.id.colorSpinner)
-
                 val colors = arrayOf(
                     "Red", "Green", "Blue", "Yellow", "Purple",
                     "Orange", "Pink", "Cyan", "Brown", "Gray"
@@ -124,24 +108,20 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                     ArrayAdapter(this, android.R.layout.simple_spinner_item, colors)
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 colorSpinner.adapter = adapter
-
                 okayButton.setOnClickListener {
                     path(mail, editText, Tag, colorSpinner)
                     dialog.dismiss()
                 }
-
                 cancelButton.setOnClickListener {
                     dialog.dismiss()
                 }
             }
         }
     }
-
     override fun onPause() {
         super.onPause()
         notesList.clear()
     }
-
     override fun onResume() {
         super.onResume()
         val currentuser = FirebaseAuth.getInstance().currentUser
@@ -152,9 +132,7 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
 
     private fun loadNotesFromDatabase() {
         val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-        val reference: DatabaseReference =
-            db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid)
-                .child("notes")
+        val reference: DatabaseReference = db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("email").child("notes")
         reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 notesList.clear()
@@ -162,12 +140,13 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                     val noteTitle = snapshot.key
                     val noteContent = snapshot.child("text").getValue(String::class.java)
                     val noteColor = snapshot.child("color").getValue(String::class.java)
-                    val noteTag = snapshot.child("tag").getValue(String::class.java)
-                    if (noteTitle != null && noteContent != null && noteColor != null && noteTag != null) {
-                        notesList.add(Note(noteTitle, noteContent, noteColor, noteTag))
+                    if (noteTitle != null && noteContent != null && noteColor != null) {
+                        notesList.add(Note(noteTitle, noteContent, noteColor))
                     }
                 }
                 notesAdapter.notifyDataSetChanged()
+
+
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -178,9 +157,7 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
 
     private fun path(mail: String, editText: EditText, Tag: EditText, colorSpinner: Spinner) {
         val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-        val reference: DatabaseReference =
-            db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid)
-                .child("notes")
+        val reference: DatabaseReference = db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("email").child("notes")
         reference.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 var childExist: Boolean
@@ -197,34 +174,26 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                                 "Title Already Taken",
                                 Toast.LENGTH_SHORT
                             ).show()
-                        } else {
+                        }
+                        else {
                             val intent = Intent(this@MainActivity, CreateNote::class.java)
                             child.child("tag").setValue(tagtext)
                             child.child("color").setValue(selectedColor)
-                            intent.putExtra("title", userInput)
+
                             startActivity(intent)
                         }
                     }
-
                     override fun onCancelled(databaseError: DatabaseError) {
                         println("Error: ${databaseError.message}")
                     }
                 })
-            } else {
+
+
+
+            }
+            else {
                 println("Error: ${task.exception?.message}")
             }
         }
-    }
-
-    // Sort notes by tag
-    private fun sortNotesByTag() {
-        notesList.sortBy { it.tag }
-        notesAdapter.notifyDataSetChanged()
-    }
-
-    // Sort notes by color
-    private fun sortNotesByColor() {
-        notesList.sortBy { it.color }
-        notesAdapter.notifyDataSetChanged()
     }
 }
