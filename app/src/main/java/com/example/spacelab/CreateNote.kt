@@ -130,6 +130,6 @@ class CreateNote : AppCompatActivity() {
             mImageView.adapter?.notifyDataSetChanged()
         } else {
             Toast.makeText(this, "Invalid image position", Toast.LENGTH_SHORT).show()
-        }
+        }//h
     }
 }

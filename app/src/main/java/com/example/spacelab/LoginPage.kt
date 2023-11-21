@@ -97,37 +97,17 @@ class LoginPage : AppCompatActivity() {
                             val user: FirebaseUser? = mAuth.getCurrentUser()
                             if(user?.isEmailVerified == true) {
                                 val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-                                val reference: DatabaseReference = db.getReference("Users")
+                                val reference: DatabaseReference = db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid)
                                 reference.get().addOnCompleteListener { task ->
                                     if (task.isSuccessful) {
                                         val dataSnapshot = task.result
                                         if (dataSnapshot != null) {
+                                            val intent = Intent(
+                                                this@LoginPage,
+                                                MainActivity::class.java
+                                            )
+                                            startActivity(intent)
 
-                                            for (snapshot in dataSnapshot.children) {
-                                                val userKey = snapshot.key
-                                                val userEmail = snapshot.child("email").getValue()
-
-                                                if (userEmail == email) {
-                                                    val reference1 =
-                                                        db.getReference("Users/$userKey")
-                                                    reference1.addListenerForSingleValueEvent(object :
-                                                        ValueEventListener {
-                                                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                                            val intent = Intent(
-                                                                this@LoginPage,
-                                                                MainActivity::class.java
-                                                            )
-                                                            intent.putExtra("key", userKey)
-                                                            startActivity(intent)
-
-                                                        }
-
-                                                        override fun onCancelled(databaseError: DatabaseError) {
-                                                            println("Error: ${databaseError.message}")
-                                                        }
-                                                    })
-                                                }
-                                            }
                                         }
                                     } else {
                                         // Handle the error
