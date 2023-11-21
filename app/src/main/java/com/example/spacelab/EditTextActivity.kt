@@ -1,6 +1,5 @@
 package  com.example.spacelab
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
@@ -10,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 class EditTextActivity : AppCompatActivity() {
@@ -39,7 +39,7 @@ class EditTextActivity : AppCompatActivity() {
         val addImageButton: Button = findViewById(R.id.addImageButton)
         val removeImageButton: Button = findViewById(R.id.removeImageButton)
 
-        val pathAsString = intent.getStringExtra("path")
+        val title = intent.getStringExtra("title")
 
         // Initialize RecyclerView and its adapter
         imageAdapter = ImageAdapter(this, imageList)
@@ -47,7 +47,8 @@ class EditTextActivity : AppCompatActivity() {
         recyclerView.adapter = imageAdapter
 
         // Retrieve the initial text and multiple images from the database using the path
-        val reference: DatabaseReference = FirebaseDatabase.getInstance().getReference(pathAsString!!)
+        val userID=FirebaseAuth.getInstance().currentUser!!.uid
+        val reference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Users/$userID/notes/$title")
         reference.child("text").get().addOnSuccessListener { dataSnapshot ->
             val initialText = dataSnapshot.value.toString()
             editText.setText(initialText)

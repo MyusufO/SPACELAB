@@ -56,6 +56,7 @@ class LoginPage : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_page)
+
         //checking the underlining
         val mTextView = findViewById<TextView>(R.id.link_NewHere)
         val mString = "New here?"

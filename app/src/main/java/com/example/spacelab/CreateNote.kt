@@ -1,5 +1,3 @@
-// CreateNote.kt
-
 package com.example.spacelab
 
 import android.content.Intent
@@ -38,7 +36,6 @@ class CreateNote : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val extras = intent.extras
         val username = extras?.getString("path")
 
@@ -49,6 +46,7 @@ class CreateNote : AppCompatActivity() {
         editText = findViewById(R.id.editText)
         saveButton = findViewById(R.id.saveButton)
         cancelButton = findViewById(R.id.cancelButton)
+        // Add this line to initialize removeImageButton
         removeImageButton = findViewById(R.id.removeImageButton)
 
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads")
@@ -62,6 +60,7 @@ class CreateNote : AppCompatActivity() {
             )
         )
 
+        // Set the OnClickListener for removeImageButton
         removeImageButton.setOnClickListener {
             Toast.makeText(this, "Click on an image to remove", Toast.LENGTH_SHORT).show()
 
@@ -87,11 +86,11 @@ class CreateNote : AppCompatActivity() {
 
         saveButton.setOnClickListener {
             val inputText = editText.text.toString()
-            val userKey = extractUserKey(username)
+            val userID = FirebaseAuth.getInstance().currentUser!!.uid
             val imagesPath = "Images"
 
             val reference: DatabaseReference =
-                FirebaseDatabase.getInstance().getReference(username)
+                FirebaseDatabase.getInstance().getReference("Users/$userID/notes/$username")
             reference.child("text").setValue(inputText)
 
             for (i in imageList.indices) {
@@ -142,11 +141,8 @@ class CreateNote : AppCompatActivity() {
         }
     }
 
-    private fun extractUserKey(inputString: String): String? {
-        val regex = Regex("""Users/([^/]+)/notes/\w+""")
-        val matchResult = regex.find(inputString)
-        return matchResult?.groups?.get(1)?.value
-    }
+
+
 
     private fun removeImage(position: Int) {
         if (position in 0 until imageList.size) {
