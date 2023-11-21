@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -41,7 +40,8 @@ class CreateNote : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val extras = intent.extras
-        val username = extras?.getString("title")
+        val username = extras?.getString("path")
+
         setContentView(R.layout.activity_create_note)
 
         mButtonUpload = findViewById(R.id.image)
@@ -49,6 +49,8 @@ class CreateNote : AppCompatActivity() {
         editText = findViewById(R.id.editText)
         saveButton = findViewById(R.id.saveButton)
         cancelButton = findViewById(R.id.cancelButton)
+        removeImageButton = findViewById(R.id.removeImageButton)
+
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads")
         mDatabaseRef = FirebaseDatabase.getInstance().getReference(username!!)
 
@@ -85,16 +87,16 @@ class CreateNote : AppCompatActivity() {
 
         saveButton.setOnClickListener {
             val inputText = editText.text.toString()
-            val userID= FirebaseAuth.getInstance().currentUser!!.uid
+            val userKey = extractUserKey(username)
             val imagesPath = "Images"
 
             val reference: DatabaseReference =
-            FirebaseDatabase.getInstance().getReference("Users/$userID/notes/$username")
+                FirebaseDatabase.getInstance().getReference(username)
             reference.child("text").setValue(inputText)
 
             for (i in imageList.indices) {
                 val imagePath = "$imagesPath/$i"
-                val imagesReference = mStorageRef.child("$imagePath/$userID")
+                val imagesReference = mStorageRef.child("$imagePath/$userKey")
 
                 imagesReference.putFile(imageList[i]!!)
                     .addOnSuccessListener { taskSnapshot ->
@@ -140,7 +142,11 @@ class CreateNote : AppCompatActivity() {
         }
     }
 
-
+    private fun extractUserKey(inputString: String): String? {
+        val regex = Regex("""Users/([^/]+)/notes/\w+""")
+        val matchResult = regex.find(inputString)
+        return matchResult?.groups?.get(1)?.value
+    }
 
     private fun removeImage(position: Int) {
         if (position in 0 until imageList.size) {
