@@ -1,5 +1,4 @@
 package com.example.spacelab
-
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
@@ -20,25 +19,34 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-
+import com.google.firebase.database.ValueEventListener
 class Signup : AppCompatActivity() {
-
     //checking the text link
     fun openlogin(view: View){
         val intent = Intent(this,LoginPage::class.java)
         startActivity(intent)
     }
-
-
     private lateinit var mAuth: FirebaseAuth
     private var progressDialog: ProgressDialog? = null
     private var emailVerificationTimer: CountDownTimer? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
+        mAuth = FirebaseAuth.getInstance()
+        val currentUser = mAuth.currentUser
+        if (currentUser != null) {
+            val userEmail = currentUser.email
+            if (userEmail != null) {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            else{
+                val intent = Intent(this, Signup::class.java)
+                startActivity(intent)
+                finish()
+            }
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
-
-        mAuth = FirebaseAuth.getInstance()
 
         //checking the underlining
         val mTextView = findViewById<TextView>(R.id.already_member)
@@ -46,27 +54,22 @@ class Signup : AppCompatActivity() {
         val mSpannableString = SpannableString(mString)
         mSpannableString.setSpan(UnderlineSpan(), 0, mSpannableString.length, 0)
         mTextView.text = mSpannableString
-
+        mAuth = FirebaseAuth.getInstance()
         progressDialog = ProgressDialog(this)
-
         val emailEditText = findViewById<EditText>(R.id.SignupLogin)
         val passwordEditText = findViewById<EditText>(R.id.SignupPassword)
         val emailPasswordSignupButton = findViewById<Button>(R.id.btn_continue)
-
         emailPasswordSignupButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
-
             if (email.isNotEmpty() && isPasswordValid(password)) {
                 progressDialog?.setMessage("Creating Account...")
                 progressDialog?.show()
-
                 userExistsInYourSystem(email, password)
             } else {
                 Toast.makeText(this, "Invalid email or password.", Toast.LENGTH_SHORT).show()
             }
         }
-
         // Google Sign-In
         val gso =
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -76,13 +79,11 @@ class Signup : AppCompatActivity() {
 
         val googleSignInClient = GoogleSignIn.getClient(this, gso)
         val googleSignInButton = findViewById<Button>(R.id.btn_gmail)
-
         googleSignInButton.setOnClickListener {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
     }
-
     private fun isPasswordValid(password: String): Boolean {
         return password.length >= 6
     }
@@ -189,9 +190,10 @@ class Signup : AppCompatActivity() {
         emailVerificationTimer?.cancel()
     }
 
+
     companion object {
         private const val RC_SIGN_IN = 9001
         private const val TAG = "SignupActivity"
     }
-}
 
+}
