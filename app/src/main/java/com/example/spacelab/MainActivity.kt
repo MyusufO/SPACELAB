@@ -157,7 +157,7 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
 
     private fun path(mail: String, editText: EditText, Tag: EditText, colorSpinner: Spinner) {
         val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-        val reference: DatabaseReference = db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("email").child("notes")
+        val reference: DatabaseReference = db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("notes")
         reference.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 var childExist: Boolean
@@ -179,7 +179,7 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                             val intent = Intent(this@MainActivity, CreateNote::class.java)
                             child.child("tag").setValue(tagtext)
                             child.child("color").setValue(selectedColor)
-
+                            intent.putExtra("title",userInput)
                             startActivity(intent)
                         }
                     }
