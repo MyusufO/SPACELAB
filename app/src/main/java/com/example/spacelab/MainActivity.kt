@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
 
     private fun loadNotesFromDatabase() {
         val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-        val reference: DatabaseReference = db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("email").child("notes")
+        val reference: DatabaseReference = db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid).child("notes")
         reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 notesList.clear()
