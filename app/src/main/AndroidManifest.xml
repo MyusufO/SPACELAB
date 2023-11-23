@@ -46,6 +46,9 @@
         <activity
             android:name=".ForgotPass"
             android:exported="true" />
+        <activity
+            android:name=".EditTextActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

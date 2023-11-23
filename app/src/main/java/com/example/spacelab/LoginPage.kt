@@ -60,8 +60,8 @@ class LoginPage : AppCompatActivity() {
         //startActivity(intent)
         //finish()
         //checking the underlining
-        val mTextView = findViewById<TextView>(R.id.link_NewHere)
-        val mString = "New here?"
+        val mTextView = findViewById<TextView>(R.id.txt_Signup)
+        val mString = "Sign Up"
         val mSpannableString = SpannableString(mString)
         mSpannableString.setSpan(UnderlineSpan(), 0, mSpannableString.length, 0)
         mTextView.text = mSpannableString

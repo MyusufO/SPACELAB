@@ -12,8 +12,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
@@ -94,31 +97,53 @@ class CreateNote : AppCompatActivity() {
                 FirebaseDatabase.getInstance().getReference("Users/$userID/notes/$username")
             reference.child("text").setValue(inputText)
 
-            for (i in imageList.indices) {
-                val imagePath = "$imagesPath/$i"
-                val imagesReference = mStorageRef.child("$imagePath/$userID")
+            val imagesReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Users/$userID/Images")
 
-                imagesReference.putFile(imageList[i]!!)
-                    .addOnSuccessListener { taskSnapshot ->
-                        taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
-                            val imagesReference = mDatabaseRef.child(imagePath)
-                            imagesReference.setValue(uri.toString())
+            // Check for a null path and increment until a null path is found
+            var i = 0
+            var imagePath: String
+            while (true) {
+                imagePath = "$i"
+                val query = imagesReference.child(imagePath)
+                query.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        if (!dataSnapshot.exists()) {
+                            // The path is null, use it
+                            for (j in imageList.indices) {
+                                val imageDatabasePath = "$imagesPath/$imagePath/$userID/$j"
+                                val storageReference = mStorageRef.child(imageDatabasePath)
+
+                                storageReference.putFile(imageList[j]!!)
+                                    .addOnSuccessListener { taskSnapshot ->
+                                        taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
+                                            val imagesReference = mDatabaseRef.child("$imagesPath/$imagePath/$j")
+                                            imagesReference.setValue(uri.toString())
+                                        }
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Toast.makeText(
+                                            this@CreateNote,
+                                            "Error uploading image: ${e.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                            }
+                            Toast.makeText(this@CreateNote, "Note saved", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this@CreateNote, MainActivity::class.java)
+                            startActivity(intent)
+                        } else {
+                            // The path is not null, try the next one
+                            i++
                         }
                     }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(
-                            this,
-                            "Error uploading image: ${e.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        // Handle errors
                     }
+                })
             }
-
-            Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show()
-
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
         }
+
 
         cancelButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
