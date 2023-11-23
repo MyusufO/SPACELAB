@@ -39,6 +39,12 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                 startActivity(Intent(this@MainActivity, LoginPage::class.java))
                 finish()
             }
+            R.id.SortTag -> {
+                sortNotesByTag()
+            }
+            R.id.SortColor -> {
+                sortNotesByColor()
+            }
             else -> {
                 // Handle other menu item clicks if needed
             }
@@ -47,33 +53,15 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
     }
     override fun onDeleteClicked(note: Note) {
         val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-        val reference: DatabaseReference = db.getReference("Users")
-        reference.get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val dataSnapshot = task.result
-                if (dataSnapshot != null) {
-                    for (snapshot in dataSnapshot.children) {
-                        val userKey = snapshot.key
-                        val userEmail = snapshot.child("email").getValue()
-                        if (userEmail == FirebaseAuth.getInstance().currentUser!!.email) {
-                            val reference1 = db.getReference("Users/$userKey")
-                            val child = reference1.child("notes").child(note.title)
-                            child.removeValue()
-                            break
-                        }
-                    }
-                }
-            } else {
-                println("Error: ${task.exception?.message}")
-            }
-        }
+        val userID=FirebaseAuth.getInstance().currentUser!!.uid
+        val reference: DatabaseReference = db.getReference("Users").child(userID).child("notes").child(note.title)
+        reference.removeValue()
     }
 
     override fun onEditClicked(note: Note, view: View) {
         val intent = Intent(this@MainActivity, EditTextActivity::class.java)
+        intent.putExtra("title", note.title)
         startActivity(intent)
-
-
     }
 
     override fun onStart() {
@@ -193,4 +181,14 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
             }
         }
     }
-}//h
+    private fun sortNotesByTag() {
+        notesList.sortBy { it.tag }
+        notesAdapter.notifyDataSetChanged()
+    }
+
+    // Sort notes by color
+    private fun sortNotesByColor() {
+        notesList.sortBy { it.color }
+        notesAdapter.notifyDataSetChanged()
+    }
+}
