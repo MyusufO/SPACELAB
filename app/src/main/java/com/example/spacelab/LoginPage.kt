@@ -56,9 +56,7 @@ class LoginPage : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login_page)
-        //val intent=Intent(this,TaskPage::class.java)
-        //startActivity(intent)
-        //finish()
+
         //checking the underlining
         val mTextView = findViewById<TextView>(R.id.txt_Signup)
         val mString = "Sign Up"
@@ -90,7 +88,12 @@ class LoginPage : AppCompatActivity() {
             val password = passwordEditText.text.toString()
 
             if(email.equals("")||password.length<6){
-                Toast.makeText(this, "$password", Toast.LENGTH_SHORT).show()
+                if (!email.isNotEmpty()) {
+                    Toast.makeText(this, "Enter an Email", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    Toast.makeText(this, "Password should contain atleast 6 characters", Toast.LENGTH_SHORT).show()
+                }
             }
             else{
                 mAuth.signInWithEmailAndPassword(email, password)
@@ -99,37 +102,17 @@ class LoginPage : AppCompatActivity() {
                             val user: FirebaseUser? = mAuth.getCurrentUser()
                             if(user?.isEmailVerified == true) {
                                 val db: FirebaseDatabase = FirebaseDatabase.getInstance()
-                                val reference: DatabaseReference = db.getReference("Users")
+                                val reference: DatabaseReference = db.getReference("Users").child(FirebaseAuth.getInstance().currentUser!!.uid)
                                 reference.get().addOnCompleteListener { task ->
                                     if (task.isSuccessful) {
                                         val dataSnapshot = task.result
                                         if (dataSnapshot != null) {
+                                            val intent = Intent(
+                                                this@LoginPage,
+                                                MainActivity::class.java
+                                            )
+                                            startActivity(intent)
 
-                                            for (snapshot in dataSnapshot.children) {
-                                                val userKey = snapshot.key
-                                                val userEmail = snapshot.child("email").getValue()
-
-                                                if (userEmail == email) {
-                                                    val reference1 =
-                                                        db.getReference("Users/$userKey")
-                                                    reference1.addListenerForSingleValueEvent(object :
-                                                        ValueEventListener {
-                                                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                                            val intent = Intent(
-                                                                this@LoginPage,
-                                                                MainActivity::class.java
-                                                            )
-                                                            intent.putExtra("key", userKey)
-                                                            startActivity(intent)
-
-                                                        }
-
-                                                        override fun onCancelled(databaseError: DatabaseError) {
-                                                            println("Error: ${databaseError.message}")
-                                                        }
-                                                    })
-                                                }
-                                            }
                                         }
                                     } else {
                                         // Handle the error
@@ -140,16 +123,12 @@ class LoginPage : AppCompatActivity() {
                                 startActivity(intent)
                             }
                             else{
-                                sendEmailVerification()
+                                //sendEmailVerification()
                             }
                         }
                         else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(
-                                baseContext,
-                                "Authentication failed.",
-                                Toast.LENGTH_SHORT,
-                            ).show()
+                            Toast.makeText(baseContext, "Please check if there is internet and try again", Toast.LENGTH_SHORT,).show()
 
                         }
                     }
@@ -170,7 +149,8 @@ class LoginPage : AppCompatActivity() {
             }
         }
     }
-    private fun sendEmailVerification() {
+
+    /*private fun sendEmailVerification() {
         val user = FirebaseAuth.getInstance().currentUser
         user!!.sendEmailVerification()
             .addOnCompleteListener { task ->
@@ -191,7 +171,7 @@ class LoginPage : AppCompatActivity() {
                     ).show()
                 }
             }
-    }
+    }*/
 
     override fun onStop() {
         super.onStop()
