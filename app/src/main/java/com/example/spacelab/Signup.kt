@@ -66,8 +66,14 @@ class Signup : AppCompatActivity() {
                 progressDialog?.setMessage("Creating Account...")
                 progressDialog?.show()
                 userExistsInYourSystem(email, password)
-            } else {
-                Toast.makeText(this, "Invalid email or password.", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                if (!email.isNotEmpty()) {
+                    Toast.makeText(this, "Enter an Email", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    Toast.makeText(this, "Password should contain atleast 6 characters", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         // Google Sign-In

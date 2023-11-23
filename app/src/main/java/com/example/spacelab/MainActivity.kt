@@ -18,17 +18,14 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val currentuser = FirebaseAuth.getInstance().currentUser
         notesRecyclerView = findViewById(R.id.notesRecyclerView)
         notesList = mutableListOf()
         notesAdapter = NotesAdapter(notesList, this)
         val layoutManager = LinearLayoutManager(this)
         notesRecyclerView.layoutManager = layoutManager
         notesRecyclerView.adapter = notesAdapter
+        loadNotesFromDatabase()
 
-        if (currentuser != null) {
-            loadNotesFromDatabase()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -88,7 +88,12 @@ class LoginPage : AppCompatActivity() {
             val password = passwordEditText.text.toString()
 
             if(email.equals("")||password.length<6){
-                Toast.makeText(this, "$password", Toast.LENGTH_SHORT).show()
+                if (!email.isNotEmpty()) {
+                    Toast.makeText(this, "Enter an Email", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    Toast.makeText(this, "Password should contain atleast 6 characters", Toast.LENGTH_SHORT).show()
+                }
             }
             else{
                 mAuth.signInWithEmailAndPassword(email, password)
@@ -123,11 +128,7 @@ class LoginPage : AppCompatActivity() {
                         }
                         else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(
-                                baseContext,
-                                "Authentication failed.",
-                                Toast.LENGTH_SHORT,
-                            ).show()
+                            Toast.makeText(baseContext, "Please check if there is internet and try again", Toast.LENGTH_SHORT,).show()
 
                         }
                     }
