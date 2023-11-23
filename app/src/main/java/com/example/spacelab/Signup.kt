@@ -49,8 +49,8 @@ class Signup : AppCompatActivity() {
         setContentView(R.layout.activity_signup)
 
         //checking the underlining
-        val mTextView = findViewById<TextView>(R.id.already_member)
-        val mString = "Already a member?"
+        val mTextView = findViewById<TextView>(R.id.txt_Login)
+        val mString = "Login"
         val mSpannableString = SpannableString(mString)
         mSpannableString.setSpan(UnderlineSpan(), 0, mSpannableString.length, 0)
         mTextView.text = mSpannableString
