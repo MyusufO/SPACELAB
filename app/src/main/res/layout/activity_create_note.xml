@@ -38,7 +38,7 @@
             android:minHeight="48dp"
             tools:ignore="VisualLintTextFieldSize" />
 
-        <!-- RecyclerView for Checkboxes -->
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewCheckboxes"
             android:layout_width="match_parent"
@@ -47,20 +47,20 @@
             android:layout_marginTop="80dp" />
 
         <Button
-            android:id="@+id/addCheckboxButton"
+            android:id="@+id/addTask"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/recyclerViewCheckboxes"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Add Checkbox" />
+            android:text="Add Task" />
 
         <!-- RecyclerView for Images -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/addCheckboxButton"
+            android:layout_below="@id/addTask"
             android:layout_marginTop="16dp" />
 
         <Button

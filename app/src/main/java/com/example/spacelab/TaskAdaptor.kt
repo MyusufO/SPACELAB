@@ -1,13 +1,13 @@
 package com.example.spacelab
+
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
+import android.widget.Button
 import android.widget.EditText
-import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -15,17 +15,17 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CheckboxAdapter(val checkboxList: MutableList<CheckboxItem>, private val onNoteSavedListener: OnNoteSavedListener) :
-    RecyclerView.Adapter<CheckboxAdapter.CheckboxViewHolder>() {
+interface OnNoteSavedListener {
+    fun onNoteSaved()
+}
 
-    interface OnNoteSavedListener {
-        fun onNoteSaved()
-    }
+class TaskAdapter(val checkboxList: MutableList<TaskList>, private val onNoteSavedListener: OnNoteSavedListener, private val isViewNoteActivity: Boolean = false) :
+    RecyclerView.Adapter<TaskAdapter.CheckboxViewHolder>() {
 
     // ViewHolder class to hold the views for each item in the RecyclerView
     class CheckboxViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val Time: TextView = itemView.findViewById(R.id.TextView)
-        val switch: Switch = itemView.findViewById(R.id.dateSwitch)
+        val button: Button = itemView.findViewById(R.id.dateSwitch)
         val Description: EditText = itemView.findViewById(R.id.description)
     }
 
@@ -45,27 +45,13 @@ class CheckboxAdapter(val checkboxList: MutableList<CheckboxItem>, private val o
 
         // Set datetime text and handle visibility based on switch state
         holder.Time.text = currentItem.datetime
-        holder.Time.visibility = if (holder.switch.isChecked) View.VISIBLE else View.GONE
+        holder.button.setOnClickListener {
+            showDateTimePicker(position, holder.itemView.context)
+        }
 
-        // Handle switch state change
-        holder.switch.setOnCheckedChangeListener { _, isChecked ->
-            // Update datetime only if the switch is checked
-            if (isChecked) {
-                val calendar = Calendar.getInstance()
-                val formattedDateTime =
-                    SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(calendar.time)
-                currentItem.datetime = formattedDateTime
-            } else {
-                // If the switch is manually turned off, remove the datetime
-                currentItem.datetime = ""
-            }
-
-            // Update visibility of the Time TextView based on switch state
-            holder.Time.visibility = if (isChecked) View.VISIBLE else View.GONE
-
-            if (isChecked) {
-                showDateTimePicker(position, holder.itemView.context)
-            }
+        // Hide the button if it's the ViewNoteActivity
+        if (isViewNoteActivity) {
+            holder.button.visibility = View.GONE
         }
     }
 
@@ -79,7 +65,7 @@ class CheckboxAdapter(val checkboxList: MutableList<CheckboxItem>, private val o
     }
 
     // Add item to the list and notify the adapter
-    fun addItem(item: CheckboxItem) {
+    fun addItem(item: TaskList) {
         checkboxList.add(item)
         notifyItemInserted(checkboxList.size - 1)
     }

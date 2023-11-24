@@ -125,8 +125,9 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                     val noteTitle = snapshot.key
                     val noteContent = snapshot.child("text").getValue(String::class.java)
                     val noteColor = snapshot.child("color").getValue(String::class.java)
-                    if (noteTitle != null && noteContent != null && noteColor != null) {
-                        notesList.add(Note(noteTitle, noteContent, noteColor))
+                    val noteTag=snapshot.child("tag").getValue(String::class.java)
+                    if (noteTitle != null && noteContent != null && noteColor != null && noteTag!=null) {
+                        notesList.add(Note(noteTitle, noteContent, noteColor, noteTag))
                     }
                 }
                 notesAdapter.notifyDataSetChanged()

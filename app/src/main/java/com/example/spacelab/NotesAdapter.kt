@@ -1,5 +1,6 @@
 package com.example.spacelab
 
+import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -12,6 +13,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+
+
 
 interface NoteActionListener {
     fun onDeleteClicked(note: Note)
@@ -27,6 +30,7 @@ class NotesAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titleTextView: TextView = itemView.findViewById(R.id.noteTitleTextView)
         val contentTextView: TextView = itemView.findViewById(R.id.noteContentTextView)
+        val Tagname:TextView=itemView.findViewById(R.id.TagText)
         val optionsButton: Button = itemView.findViewById(R.id.optionsButton)
         val notesContainer: LinearLayout = itemView.findViewById(R.id.notesContainer)
 
@@ -38,8 +42,25 @@ class NotesAdapter(
                     showOptionsPopup(itemView, note)
                 }
             }
+
+            // Set a click listener for the entire note item
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val note = notesList[position]
+                    openViewNoteActivity(itemView.context, note)
+                }
+            }
+        }
+
+        // Function to open the ViewNote activity
+        private fun openViewNoteActivity(context: Context, note: Note) {
+            val intent = Intent(context, ViewNoteActivity::class.java)
+            intent.putExtra("title",note.title)
+            context.startActivity(intent)
         }
     }
+
 
     private fun showOptionsPopup(view: View, note: Note) {
         val popupMenu = PopupMenu(view.context, view)
@@ -90,7 +111,7 @@ class NotesAdapter(
 
         // Set background color for the LinearLayout
         holder.notesContainer.setBackgroundColor(backgroundColor)
-
+        holder.Tagname.text=note.tag
         holder.titleTextView.text = note.title
         holder.contentTextView.text = note.content
     }

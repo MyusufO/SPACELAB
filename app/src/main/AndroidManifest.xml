@@ -8,7 +8,6 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -20,7 +19,7 @@
         android:theme="@style/Theme.SPACELAB"
         tools:targetApi="31">
         <activity
-            android:name=".TaskPage"
+            android:name=".ViewNoteActivity"
             android:exported="false" />
         <activity
             android:name=".SplashPage"
@@ -46,7 +45,6 @@
         <activity
             android:name=".ForgotPass"
             android:exported="true" />
-
         <activity
             android:name=".EditTextActivity"
             android:exported="true" />
@@ -54,7 +52,6 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
     </application>
 
 </manifest>

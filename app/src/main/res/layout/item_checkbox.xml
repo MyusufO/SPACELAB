@@ -25,7 +25,7 @@
         android:minWidth="48dp"
         android:minHeight="48dp" />
 
-    <Switch
+    <Button
         android:id="@+id/dateSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

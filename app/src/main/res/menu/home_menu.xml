@@ -10,7 +10,7 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"/>
     <item
         android:id="@+id/SortTag"
-        android:title="item1"/>
+        android:title="Sort By Tag"/>
 
     <item
         android:id="@+id/out"
