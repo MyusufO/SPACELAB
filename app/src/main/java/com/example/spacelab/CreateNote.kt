@@ -1,4 +1,4 @@
-package com.example.spacelab
+package  com.example.spacelab
 
 import android.content.Intent
 import android.net.Uri
@@ -12,17 +12,15 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
-class CreateNote : AppCompatActivity() {
+// Main activity for creating notes
+class CreateNote : AppCompatActivity(), CheckboxAdapter.OnNoteSavedListener {
 
-    // Request code for picking an image
+    // Constants
     private val PICK_IMAGE_REQUEST = 1
 
     // UI elements
@@ -32,28 +30,25 @@ class CreateNote : AppCompatActivity() {
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
     private lateinit var removeImageButton: Button
-
-    // Firebase references
+    private lateinit var checkboxAdapter: CheckboxAdapter
+    private lateinit var checkboxRecyclerView: RecyclerView
     private lateinit var mStorageRef: StorageReference
     private lateinit var mDatabaseRef: DatabaseReference
-
-    // List to store image URIs
     private val imageList = mutableListOf<Uri?>()
-
-    // Currently selected image URI
     private var mImageUri: Uri? = null
 
-    // Custom ItemClickListener for RecyclerView
+    // Custom item click listener for RecyclerView
     private lateinit var recyclerItemClickListener: RecyclerItemClickListener
 
+    // Called when the activity is first created
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Retrieve username from the intent extras
+        // Get username from intent extras
         val extras = intent.extras
         val username = extras?.getString("title")
 
-        // Set the layout for this activity
+        // Set the layout for the activity
         setContentView(R.layout.activity_create_note)
 
         // Initialize UI elements
@@ -68,89 +63,90 @@ class CreateNote : AppCompatActivity() {
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads")
         mDatabaseRef = FirebaseDatabase.getInstance().getReference(username!!)
 
-        // Configure RecyclerView
+        // Initialize CheckboxAdapter for checkboxes
+        checkboxAdapter = CheckboxAdapter(mutableListOf(), this)
+
+        // Configure the image RecyclerView
         mImageView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mImageView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL))
 
-        // Set the OnClickListener for removeImageButton
-        removeImageButton.setOnClickListener {
-            Toast.makeText(this, "Click on an image to remove", Toast.LENGTH_SHORT).show()
+        // Configure the checkbox RecyclerView
+        checkboxRecyclerView = findViewById(R.id.recyclerViewCheckboxes)
+        checkboxRecyclerView.layoutManager = LinearLayoutManager(this)
+        checkboxRecyclerView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+        checkboxRecyclerView.adapter = checkboxAdapter
 
-            // Initialize and attach custom ItemTouchListener for RecyclerView
-            recyclerItemClickListener = RecyclerItemClickListener(this, mImageView,
-                object : RecyclerItemClickListener.OnItemClickListener {
-                    override fun onItemClick(view: View, position: Int) {
-                        removeImage(position)
-                    }
-                })
-            mImageView.addOnItemTouchListener(recyclerItemClickListener)
+        // Enable swipe-to-delete for checkboxRecyclerView
+        checkboxAdapter.enableSwipeToDelete(checkboxRecyclerView)
+
+        // Set click listener for adding checkboxes
+        val addCheckboxButton: Button = findViewById(R.id.addCheckboxButton)
+        addCheckboxButton.setOnClickListener {
+            val checkboxLabel = editText.text.toString()
+            checkboxAdapter.addItem(CheckboxItem(checkboxLabel))
+            editText.text.clear()
         }
 
-        // Set OnClickListener for the upload button
+        // Set item click listener for image RecyclerView
+        recyclerItemClickListener = RecyclerItemClickListener(this, mImageView,
+            object : RecyclerItemClickListener.OnItemClickListener {
+                override fun onItemClick(view: View, position: Int) {
+                    removeImage(position)
+                }
+            })
+        mImageView.addOnItemTouchListener(recyclerItemClickListener)
+
+        // Set click listener for image upload button
         mButtonUpload.setOnClickListener {
             openFileChooser()
-
-            // Remove the custom ItemTouchListener if it's initialized
             if (::recyclerItemClickListener.isInitialized) {
                 mImageView.removeOnItemTouchListener(recyclerItemClickListener)
             }
         }
 
-        // Create and set the adapter for the RecyclerView
+        // Initialize and set adapter for image RecyclerView
         val imageAdapter = ImageAdapter(this, imageList)
         mImageView.adapter = imageAdapter
 
-        // Set OnClickListener for the save button
+        // Set click listener for save button
         saveButton.setOnClickListener {
-            // Retrieve text input
+            // Get input text and user ID
             val inputText = editText.text.toString()
-
-            // Get the current user ID
             val userID = FirebaseAuth.getInstance().currentUser!!.uid
 
-            // Define the path for storing images in Firebase Storage
-            val imagesPath = "Images"
-
-            // Reference to the user's notes in Firebase Database
+            // Firebase paths
             val reference: DatabaseReference =
                 FirebaseDatabase.getInstance().getReference("Users/$userID/notes/$username")
 
-            // Save text input to the database
+            // Save text input to Firebase
             reference.child("text").setValue(inputText)
 
-            // Save images to the database using the path
-            val imagesRef = reference.child("Images")
-
-            // Clear existing images and add the new list of image URLs
-            imagesRef.removeValue().addOnSuccessListener {
-                for (i in imageList.indices) {
-                    // Save the image URLs directly in the database
-                    imagesRef.child("$i").setValue(imageList[i].toString())
+            // Save checkboxes to Firebase under "Tasks"
+            val tasksRef = reference.child("tasks")
+            tasksRef.removeValue().addOnSuccessListener {
+                for ((index, checkboxItem) in checkboxAdapter.checkboxList.withIndex()) {
+                    tasksRef.child(index.toString()).setValue(checkboxItem)
                 }
 
-                // Display a toast message indicating that the note is saved
+                // Display success message and navigate to the main activity
                 Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show()
-
-                // Redirect to the main activity
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
 
             }.addOnFailureListener {
-                // Handle the error
-                Toast.makeText(this, "Error clearing existing images: ${it.message}", Toast.LENGTH_SHORT).show()
+                // Display error message if checkbox saving fails
+                Toast.makeText(this, "Error saving checkboxes: ${it.message}", Toast.LENGTH_SHORT).show()
             }
         }
 
-
-        // Set OnClickListener for the cancel button
+        // Set click listener for cancel button
         cancelButton.setOnClickListener {
-            // Redirect to the main activity
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
     }
 
-    // Open the file chooser to pick an image
+    // Open file chooser for image selection
     private fun openFileChooser() {
         val intent = Intent()
         intent.type = "image/*"
@@ -158,7 +154,7 @@ class CreateNote : AppCompatActivity() {
         startActivityForResult(intent, PICK_IMAGE_REQUEST)
     }
 
-    // Handle the result of picking an image
+    // Handle result from file chooser
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
@@ -168,7 +164,7 @@ class CreateNote : AppCompatActivity() {
         }
     }
 
-    // Remove the selected image at the specified position
+    // Remove image at the specified position
     private fun removeImage(position: Int) {
         if (position in 0 until imageList.size) {
             imageList.removeAt(position)
@@ -176,5 +172,13 @@ class CreateNote : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Invalid image position", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    // Callback method from CheckboxAdapter when a note is saved
+    override fun onNoteSaved() {
+        // You can add any additional logic you want when a note is saved
+        // For example, you might want to perform some action or show a message
+        // Here, we'll just display a Toast message
+        Toast.makeText(this, "Note saved from CheckboxAdapter", Toast.LENGTH_SHORT).show()
     }
 }

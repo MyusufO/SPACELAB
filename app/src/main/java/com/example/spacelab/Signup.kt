@@ -89,9 +89,49 @@ class Signup : AppCompatActivity() {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
+
     }
     private fun isPasswordValid(password: String): Boolean {
         return password.length >= 6
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                firebaseAuthWithGoogle(account.idToken)
+            } catch (e: ApiException) {
+                // Handle Google sign-in failure here
+            }
+        }
+    }
+    private fun firebaseAuthWithGoogle(idToken: String?) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        mAuth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val user = mAuth.currentUser
+                    if (user != null) {
+                        val email = user.email
+                        if (email != null) {
+                            val db: FirebaseDatabase = FirebaseDatabase.getInstance()
+                            val reference: DatabaseReference = db.getReference("Users")
+                            val  userId=user.uid
+                            val newUser = reference.child(userId)
+                            newUser.child("email").setValue(email)
+                            val intent = Intent(this, MainActivity::class.java)
+                            startActivity(intent)
+
+                        }
+                    }
+                    // Sign in with Google successful, you can redirect to the main activity
+                }
+                else {
+                    // Handle Google sign-in failure here
+                }
+            }
     }
 
     private fun userExistsInYourSystem(email: String, password: String) {
