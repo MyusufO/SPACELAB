@@ -30,6 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="add reminder"
+        android:padding="10dp"
+        android:background="@drawable/inside_buttons"
         android:layout_marginStart="16dp"
         android:minWidth="48dp"
         android:minHeight="48dp"/>

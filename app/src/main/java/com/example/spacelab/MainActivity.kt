@@ -1,5 +1,8 @@
 package com.example.spacelab
+
 import android.app.Dialog
+import android.text.Editable
+import android.text.TextWatcher
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -79,12 +82,13 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                 val dialog = Dialog(this)
                 dialog.setContentView(R.layout.alertbox)
                 dialog.setCancelable(false)
-                dialog.show()
+
                 val okayButton = dialog.findViewById<Button>(R.id.btnOkay)
                 val cancelButton = dialog.findViewById<Button>(R.id.btnCancel)
                 val editText = dialog.findViewById<EditText>(R.id.editText)
                 val Tag = dialog.findViewById<EditText>(R.id.Tag)
                 val colorSpinner = dialog.findViewById<Spinner>(R.id.colorSpinner)
+
                 val colors = arrayOf(
                     "Red", "Green", "Blue", "Yellow", "Purple",
                     "Orange", "Pink", "Cyan", "Brown", "Gray"
@@ -93,6 +97,57 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                     ArrayAdapter(this, android.R.layout.simple_spinner_item, colors)
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 colorSpinner.adapter = adapter
+
+                // Disable the "Okay" button initially
+                okayButton.isEnabled = false
+
+                // Add text change listeners to the editText and Tag fields
+                editText.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(
+                        charSequence: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
+                    }
+
+                    override fun onTextChanged(
+                        charSequence: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
+                        // Enable the "Okay" button if both fields are filled
+                        okayButton.isEnabled = !charSequence.isNullOrBlank() && !Tag.text.isNullOrBlank()
+                    }
+
+                    override fun afterTextChanged(editable: Editable?) {
+                    }
+                })
+
+                Tag.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(
+                        charSequence: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
+                    }
+
+                    override fun onTextChanged(
+                        charSequence: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
+                        // Enable the "Okay" button if both fields are filled
+                        okayButton.isEnabled = !charSequence.isNullOrBlank() && !editText.text.isNullOrBlank()
+                    }
+
+                    override fun afterTextChanged(editable: Editable?) {
+                    }
+                })
+
                 okayButton.setOnClickListener {
                     path(mail, editText, Tag, colorSpinner)
                     dialog.dismiss()
@@ -100,9 +155,11 @@ class MainActivity : AppCompatActivity(), NoteActionListener {
                 cancelButton.setOnClickListener {
                     dialog.dismiss()
                 }
+                dialog.show()
             }
         }
     }
+
     override fun onPause() {
         super.onPause()
         notesList.clear()

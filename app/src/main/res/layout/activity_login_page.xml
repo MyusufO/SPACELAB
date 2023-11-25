@@ -34,7 +34,7 @@
         android:background="@drawable/bg_bt_google"
         android:drawableStart="@drawable/iccc_google"
         android:paddingHorizontal="35dp"
-        android:text="Continue with Google"
+        android:text="Log In with Google"
         android:textAllCaps="false"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"

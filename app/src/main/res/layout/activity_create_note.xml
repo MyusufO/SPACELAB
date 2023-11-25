@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/note_background"
     tools:context=".CreateNote">
 
     <RelativeLayout
@@ -15,6 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Save"
+            android:background="@drawable/inside_buttons"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="32dp"/>
@@ -24,6 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
+            android:background="@drawable/inside_buttons"
             android:layout_marginStart="10dp"
             android:layout_marginTop="32dp"
             android:text="Cancel" />
@@ -53,6 +56,7 @@
             android:layout_below="@id/recyclerViewCheckboxes"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+            android:background="@drawable/inside_buttons"
             android:text="Add Task" />
 
         <!-- RecyclerView for Images -->
@@ -69,6 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/recyclerView"
             android:layout_marginStart="16dp"
+            android:background="@drawable/inside_buttons"
             android:layout_marginTop="16dp"
             android:text="@string/add_image" />
 
@@ -79,7 +84,9 @@
             android:layout_below="@id/recyclerView"
             android:layout_marginStart="118dp"
             android:layout_marginTop="16dp"
+            android:padding="10dp"
             android:layout_toEndOf="@id/image"
+            android:background="@drawable/inside_buttons"
             android:text="Remove Image" />
     </RelativeLayout>
 </ScrollView>
